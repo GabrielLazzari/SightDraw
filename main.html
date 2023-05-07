@@ -1,0 +1,3665 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: rgb(209, 209, 209);
+        }
+
+        .elemento{
+            position: absolute;
+            border: rgb(168, 168, 168) 3px solid;
+        }
+
+        .elemento[selecionado="true"]{
+            border: 2px solid red;
+        }
+
+        .elementoEdicao{
+            position: absolute;
+            border: 1px black solid;
+            background-color: aliceblue;
+            z-index: 1;
+        }
+
+        .elementoEdicao:hover{
+            background-color: rgb(214, 0, 0);
+        }
+
+        #elementoSelecao{
+            z-index: 999;
+            position: absolute;
+            background-color: rgba(50, 50, 100, 0.4);
+        }
+
+        #elementoSelecionados{
+            z-index: 999;
+            position: absolute;
+            border: 2px solid red;
+        }
+
+
+        /*=====================================*/
+        .retangulo{
+            background-color: #dbe1e2;
+            z-index: 2;
+        }
+
+        .linha{
+            z-index: 0;
+        }
+
+        .texto{
+            display: block;
+            width: max-content;
+            overflow: hidden;
+            min-height: 20px;
+            line-height: 20px;
+            padding: 1px;
+            border: 2px solid #ccc;
+        }
+
+        .texto.editando{
+            /*resize: both;*/
+            background-color: rgb(228, 255, 232);
+        }
+
+        .tabela td{
+            border: 2px solid black;
+        }
+
+        .tabela td[tdselecionado="true"]{
+            border: 2px solid red;
+        }
+
+        .tabela td:hover{
+            background-color: aquamarine;
+        }
+
+        .imagem{
+            width: 100px;
+            height: 100px;
+        }
+
+        .imagem .fileInput{
+            width: 100%;
+            height: 100%;
+            background: url("ionicons/image-outline.svg") no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        .grafico{
+            border: 2px dashed gray;
+        }
+
+        /*=====================================*/
+        .janela{
+            position: absolute;
+            z-index: 999;
+        }
+
+        .janelaHead{
+            position: absolute;
+            display: flex;
+            flex-flow: row wrap;
+            text-align: center;
+            justify-content: space-evenly;
+            background-color: grey;
+            width: 100%;
+        }
+
+        .janHeadSelect{
+            background-color: rgb(171, 179, 192);
+        }
+
+        .janelaBody{
+            padding-top: 40px;
+            display: none;
+        }
+
+        .janelaBody.janBodySelect{
+            display: block;
+        }
+
+        .janelaBody button{
+            padding: 5px;
+        }
+
+        .botaoFecharJanela{
+            text-align: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        .estiloJanela{
+            background-color: rgb(178, 193, 208);
+            transition: 0.3s;
+            border-left: 4px solid rgb(98, 98, 98);
+        }
+
+        /*=====================================*/
+        #janelaEditarElemento{
+            background-color: rgb(178, 193, 208);
+            width: 300px;
+            height: 100%;
+            left: calc(100% - 305px);
+            top: 0px;
+            transition: 0.3s;
+            border-left: 4px solid rgb(98, 98, 98);
+            display: block;
+        }
+
+        .tabelaElementoPropiedades td{
+            padding: 5px;
+        }
+
+        .tabelaElementoPropiedades td input{
+            width: 100%;
+        }
+
+        #cabecalhojanelaEditarElemento div{
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+
+        /*=====================================*/
+        #janelaSelecionarFerramenta{
+            background-color: rgb(178, 193, 208);
+            width: 30px;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+        }
+
+        .trFerramenta{
+            background-color: rgb(128, 196, 204);
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+        }
+
+        .trFerramenta:hover{
+            background-color: rgb(159, 202, 255);
+        }
+
+
+        /*=====================================*/
+        #janelaConfiguracoes{
+            display: none;
+        }
+
+
+        /*=====================================*/
+        #janelaAcoes{
+            display: flex;
+            flex-flow: row wrap;
+            text-align: center;
+            justify-content: right;
+        }
+
+        #janelaEditarAcoes{
+            display: flex;
+            flex-flow: row wrap;
+            text-align: center;
+            justify-content: right;
+            background-color: blueviolet;
+            padding: 20px;
+            background-color: rgb(171, 179, 192);
+            border: 4px solid rgb(98, 98, 98);
+            border-radius: 5px;
+            display: none;
+        }
+
+        #janelaEditarAcoes td{
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        #janelaEditarAcoes tr td:first-child{
+            padding-left: 0px;
+        }
+
+        .botaoAcao{
+            background-color: rgb(168, 232, 210);
+            margin: 3px;
+            margin-left: 1px;
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+        }
+
+        .botaoAcao.ativo{
+            background-color: rgb(100, 227, 240);
+        }
+
+        .botaoAcao:hover{
+            background-color: rgb(140, 171, 163);
+        }
+
+        .botaoAcao.ativo:hover{
+            background-color: rgb(171, 251, 251);
+        }
+
+
+        /*=====================================*/
+        #janelaEditarReferencias{
+            display: none;
+        }
+
+
+        /*=====================================*/
+        #janelaControleArquivo{
+            background-color: rgb(171, 179, 192);
+            border: 4px solid rgb(98, 98, 98);
+            min-width: 370px;
+            display: none;
+        }
+
+        .bodyjanelaControleArquivo{
+            padding: 30px;
+        }
+
+        #fileInput{
+            background-color: #ccc;
+            border: 2px solid black;
+            height: 100px;
+        }
+
+        /*=====================================*/
+        #janelaCriarEvento{
+            background-color: rgb(171, 179, 192);
+            border: 4px solid rgb(98, 98, 98);
+            width: 320px;
+            padding: 20px;
+            display: none;
+        }
+
+        #janelaCriarEvento button{
+            padding: 5px;
+        }
+
+        /*=====================================*/
+        .janelaDetalhes{
+            position: absolute;
+            background-color: grey;
+            border: 4px solid rgb(98, 98, 98);
+            width: 80%;
+            height: 80%;
+            top: calc((100% - 80%)/2);
+            left: calc((100% - 80%)/2);
+            z-index: 100;
+            transition: 0.3s;
+        }
+
+        .janelaDetalhes.maximizada{
+            left: 30px;
+            top: 0px;
+            width: calc(100% - 37px);
+            height: calc(100% - 6px);
+        }
+
+        .corpoJanelaDetalhes{
+            position: absolute;
+            width: 100%;
+            height: calc(100% - 20px);
+            overflow: hidden;
+            background-color: rgb(171, 179, 192);
+            top: 20px;
+            left: 0px;
+        }
+
+        .cabecalhoJanelaDetalhes{
+            position: absolute;
+            border-bottom: 2px solid black;
+            top: 0px;
+        }
+        
+
+        /*=====================================*/
+        .svg{ width: 34px; height: 34px; }
+        .svg-sm{ width: 24px; height: 24px; }
+
+    </style>
+
+</head>
+<body>
+    
+    <div id="elementoSelecao"></div>
+    <div id="elementoSelecionados"></div>
+    <div style="z-index: 4; position: absolute; left: 31px;" id="opcoesDesenvolv"></div>
+
+	<!--<svg width="350" height="350">
+	<polygon points="200,50 165,150 55,150 140,220 110,325 200,260 285,325 250,220 340,150 230,150"
+	fill="url(#grad1)" stroke="black" stroke-width="5"/>
+	</svg>-->
+
+    <!--<svg class="elemento linha" width="200px" height="200px" idd="756" style="top: 70px; left:400px">
+        <line x1="30" y1="0" x2="30" y2="60" idd="75676" style="stroke:red; stroke-width: 5;"/>
+        <line x1="10" y1="10" x2="50" y2="10" idd="756900" style="stroke-opacity: 0.2; stroke: black; stroke-width: 5;"/>
+        <line x1="10" y1="20" x2="50" y2="20" idd="756678" style="stroke-opacity: 0.4; stroke: black; stroke-width: 5;"/>
+        <line x1="10" y1="30" x2="50" y2="30" idd="756124" style="stroke-opacity: 0.6; stroke: black; stroke-width: 5;"/>
+        <line x1="10" y1="40" x2="50" y2="40" idd="756465" refsto="756675_xy2" style="stroke-opacity: 0.8; stroke: black; stroke-width: 5;"/>
+        <line x1="10" y1="50" x2="50" y2="40" idd="756675" refsfrom="756465_xy2" style="stroke-opacity: 1.0; stroke: black; stroke-width: 5;"/>
+    </svg>-->
+
+    <!--<svg class="elemento linha" width="50px" height="10px" style="top: 10px; left:400px">
+        <line x1="0" y1="0" x2="50" y2="0" idd="5676qwe" style="stroke:red; stroke-width: 5;"/>
+        <polygon idLinha="5676qwe" style="transform-origin: 50% 50%; transform: rotate(180deg);" points="0 0, 0 18, 14 10" />
+    </svg>-->
+
+    <!--<svg class="elemento linha" width="200px" height="200px" idd="756344" style="top: 70px; left:100px">
+        <line x1="30" y1="0" x2="10" y2="40" idd="qwe" refsTo="123_xy1,4rf_xy2" style="stroke:red; stroke-width: 5;"/>
+        <line x1="10" y1="40" x2="50" y2="10" idd="123" refsTo="y6t_xy1" refsFrom="qwe_xy2" style="stroke-opacity: 0.2; stroke: black; stroke-width: 5;"/>
+        <line x1="50" y1="10" x2="100" y2="100" idd="y6t" refsTo="9ij_xy1" refsFrom="123_xy2" style="stroke-opacity: 0.2; stroke: black; stroke-width: 5;"/>
+        <line x1="100" y1="100" x2="30" y2="120" idd="9ij" refsto="4rf_xy1" refsFrom="y6t_xy2" style="stroke-opacity: 0.4; stroke: black; stroke-width: 5;"/>
+        <line x1="30" y1="120" x2="10" y2="40" idd="4rf" refsFrom="qwe_xy2,9ij_xy2" style="stroke-opacity: 0.4; stroke: black; stroke-width: 5;"/>
+    </svg>-->
+
+    <!--<div class="elemento retangulo" grupo="g1" refsTo="756675_xy1_756, 123_xy1" selecionado="false" idd="1676398281734" style="width: 200px; height: 200px; left: 128px; top: 239px;"
+         detalhes="<div class='elemento'> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with dsktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many dektop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like). Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet..+ comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham. Where can I get some? There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.</div>">
+    </div>
+    <div class="elemento retangulo" grupo="g1" idd="1676s398281734" selecionado="false" style="width: 130px; height: 130px; left: 148px; top: 259px;"></div>
+    <div class="elemento retangulo" grupo="g1" refsTo="75676_xy1" idd="1676s3982734d" selecionado="false" style="width: 70px; height: 70px; left: 168px; top: 279px;"
+            detalhes="<div class='elemento retangulo' idd='asd' selecionado='false' style='width: 130px; height: 130px; left: 148px; top: 80px; rotate: 45deg;'></div>">
+    </div>-->
+
+    <!--<div class="elemento retangulo" selecionado="false" evento="x" idd="234543" style="width: 150px; height: 150px; left: 50px; top: 50px;"></div>
+    <div class="elemento retangulo" selecionado="false" evento="y" eventopert="x" idd="2335443" style="width: 100px; height: 100px; left: 50px; top: 50px;"></div>
+    <div class="elemento retangulo" selecionado="false" eventopert="y" idd="2355443" style="width: 50px; height: 50px; left: 50px; top: 50px;"
+            detalhes="<div class='elemento retangulo' idd='asd' selecionado='false' style='width: 130px; height: 130px; left: 148px; top: 80px;'></div>">
+    </div>-->
+
+
+    <table class="elemento tabela" style="top: 200px; left: 70px;">
+        <tr>
+            <td><div class="texto">aa</div></td>
+            <td><div class="texto">bb</div></td>
+            <td><div class="texto">bb</div></td>
+        </tr>
+        <tr>
+            <td><div class="texto">aa</div></td>
+            <td><div class="texto">cc</div></td>
+            <td><div class="texto">cc</div></td>
+        </tr>
+        <tr>
+            <td><div class="texto">aa</div></td>
+            <td><div class="texto">cc</div></td>
+            <td><div class="texto">cc</div></td>
+        </tr>
+    </table>
+
+
+
+    <div id="janelaEditarElemento" class="janela">
+        <div id="cabecalhojanelaEditarElemento" class="janelaHead">
+            <div id="cabecalhojanelaEditarElementoPropriedades" class="janHeadSelect" onclick="alterarJanelaInterna('janelaEditarElemento', 'propriedades')">Propriedades</div>
+            <hr>
+            <div id="cabecalhoJanelaControleArquivoAlinhar" onclick="alterarJanelaInterna('janelaEditarElemento', 'alinhar')">Alinhamento</div>
+            <hr>
+            <div id="cabecalhojanelaEditarElementoTexto" onclick="alterarJanelaInterna('janelaEditarElemento', 'texto')">Texto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <hr>
+            <div id="cabecalhoJanelaControleArquivoTabela" onclick="alterarJanelaInterna('janelaEditarElemento', 'tabela')">Tabela</div>
+            <hr>
+            <div id="cabecalhoJanelaEditarElementoReferencias" onclick="alterarJanelaInterna('janelaEditarElemento', 'referencias')">Referencias</div>
+            <hr>
+            <button class="botaoFecharJanela" onclick="fecharJanela('janelaEditarElemento')">X</button>
+        </div>
+        <div id="janelaEditarElementoPropriedades" class="janelaBody janBodySelect">
+            <table class="tabelaElementoPropiedades">
+                <tr>
+                    <td>
+                        <label for="editarElementoCampoX">x</label>
+                        <input id="editarElementoCampoX" activeValue="top" type="text">
+                    </td>
+                    <td>
+                        <label for="editarElementoCampoY">y</label>
+                        <input id="editarElementoCampoY" activeValue="left" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoCampoLar">Largura</label>
+                        <input id="editarElementoCampoLar" activeValue="width" type="text">
+                    </td>
+                    <td>
+                        <label for="editarElementoCampoAlt">Altura</label>
+                        <input id="editarElementoCampoAlt" activeValue="height" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoRadius">Borda Radius</label>
+                        <input id="editarElementoRadius" activeValue="borderRadius" type="range" min="0" max="100" step="1" value="0" style="width: 47%;">
+                        <input id="editarElementoRadiusCaixa" activeValue="borderRadius" type="number" min="0" max="100" style="width: 46%;">
+                    </td>
+                    <td>
+                        <label for="editarElementoRotate">Rotacao &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoRotate" activeValue="rotate" activeType="deg" type="range" min="0" max="360" step="1" value="0" style="width: 47%;">
+                        <input id="editarElementoRotateCaixa" activeValue="rotate" activeType="deg" type="number" min="0" max="360" style="width: 46%;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoBorda">Borda &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoExpessuraBorda" type="number" activeValue="borderWidth" style="width: 47%;">
+                        <input id="editarElementoCorBorda" activeValue="borderColor" activeType="" type="color" value="#000000" style="width: 46%;">
+                    </td>
+                    <td>
+                        <label for="editarElementoCorFundo">Cor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <select id="editarElementoTipoBorda" activeValue="borderStyle" activeType="" onchange="atualizarValoresElementoApartirEditorElementosClick(this)" style="width: 47%;">
+                            <option value="none"></option>
+                            <option value="solid">Solid</option>
+                            <option value="dashed">Dashed</option>
+                            <option value="dotted">Dotted</option>
+                            <option value="double">Double</option>
+                            <option value="groove">Groove</option>
+                            <option value="ridge">Ridge</option>
+                            <option value="inset">Inset</option>
+                            <option value="outset">Outset</option>
+                        </select>
+                        <input id="editarElementoCorFundo" activeValue="backgroundColor" activeType="" type="color" value="#000000" style="width: 47%;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick="retrairExpandirElementosSelecionados()">Retrair/Expandir</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="janelaEditarElementoAlinhar" class="janelaBody">
+            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('left')" style="display: block;"><img src="ionicons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
+            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('top')" style="display: block;"><img src="ionicons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
+        </div>
+        <div id="janelaEditarElementoTexto" class="janelaBody">
+            <table class="tabelaElementoPropiedades">
+                <tr>
+                    <td colspan="2">
+                        <label for="editarElementoCampoNome">Texto</label>
+                        <input id="editarElementoCampoNome" activeValue="texto" type="text">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="janelaEditarElementoTabela" class="janelaBody">
+            <table class="tabelaElementoPropiedades">
+                <tr>
+                    <td>
+                        <button onclick="tabelaMostrarEsconderColunas(this)">Colunas</button>
+                    </td>
+                    <td>
+                        <button  onclick="tabelaMostrarEsconderLinhas(this)">Linhas</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="janelaEditarElementoReferencias" class="janelaBody">
+            <table class="tabelaElementoPropiedades">
+                <tr>
+                    <td>
+                        <label for="editarElementoId">Id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoId" type="text" activeValue="persistir" readonly>
+                        <button id="editarElementoIdSalvar" onclick="alterarReferenciasElemento(this)" style="display: none;">Salvar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoNome">Nome&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoNome" type="text" activeValue="persistir">
+                        <button id="editarElementoNomeSalvar" onclick="alterarReferenciasElemento(this)" style="display: none;">Salvar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoGrupo">Grupo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoGrupo" type="text" activeValue="persistir">
+                        <button id="editarElementoGrupoSalvar" onclick="alterarReferenciasElemento(this)" style="display: none;">Salvar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoEvento">Evento&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoEvento" type="text" activeValue="persistir">
+                        <button id="editarElementoEventoSalvar" onclick="alterarReferenciasElemento(this)" style="display: none;">Salvar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="editarElementoEventoPertencente">Evento Pertencente&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input id="editarElementoEventoPertencente" type="text" activeValue="persistir">
+                        <button id="editarElementoEventoPertencenteSalvar" onclick="alterarReferenciasElemento(this)" style="display: none;">Salvar</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div id="janelaSelecionarFerramenta" class="janela">
+        <table style="text-align: center;">
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferselecao" class="trFerramenta" onclick="alterarFerramenta('selecao')" style="background-color: rgb(120, 151, 187);" title="Selecionar (1)"><img src="ionicons/mouse-outline.svg" class="svg-sm"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferretangulo" onclick="alterarFerramenta('retangulo')" class="trFerramenta" title="Novo Retangulo (2)"><img src="ionicons/retangulo-outline.svg" class="svg-sm"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferlinha" onclick="alterarFerramenta('linha')" class="trFerramenta"><img src="ionicons/analytics-outline.svg" class="svg-sm" title="Editar Linhas (3)"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divfertexto" class="trFerramenta" onclick="alterarFerramenta('texto')"><img src="ionicons/font-outline.svg" class="svg-sm" title="Novo Texto (4)"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divfertabela" class="trFerramenta" onclick="alterarFerramenta('tabela')"><img src="ionicons/tabela-outline.svg" class="svg-sm" title="Tabela (5)"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferevento" class="trFerramenta" onclick="alterarFerramenta('evento')"><img src="ionicons/chevron-forward-outline.svg" class="svg-sm" title="Criar Elemento Expansao(Evento) (6)"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferimagem" class="trFerramenta" onclick="alterarFerramenta('imagem')"><img src="ionicons/image-outline.svg" class="svg-sm" title="Imagem (7)"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divfergrafico" class="trFerramenta" onclick="alterarFerramenta('grafico')"><img src="ionicons/bar-chart-outline.svg" class="svg-sm" title="Gráfico (8)"></div>
+                </td>
+            </tr>
+        </table>
+        <table style="text-align: center; position: relative; top: calc(100% - 265px);">
+            <tr>
+                <td style="padding: 1px;">
+                    <div id="divferconfiguracoes" class="trFerramenta" onclick="abrirFecharJanela('janelaConfiguracoes')"><img src="ionicons/settings-outline.svg" class="svg-sm" title="Configuracoes (c)"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <div id="janelaConfiguracoes" class="janela">
+        Opcao mostrar janel de salvar
+        Opcao de salvar rapidamente(arquivo, cookie, local)
+        Abrir arquivo escolhido ao selecionar arquivo
+    </div>
+
+    <div id="janelaAcoes" class="janela">
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAcima')" style="display: none;"><img src="ionicons/tabela-adiconar-acima-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addEsquerda')" style="display: none;"><img src="ionicons/tabela-adiconar-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAbaixo')" style="display: none;"><img src="ionicons/tabela-adiconar-abaixo-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addDireita')" style="display: none;"><img src="ionicons/tabela-adiconar-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remLinha')" style="display: none;"><img src="ionicons/tabela-remover-linha-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remColuna')" style="display: none;"><img src="ionicons/tabela-remover-coluna-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('left')" style="display: block;"><img src="ionicons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('center')" style="display: block;"><img src="ionicons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('right')" style="display: block;"><img src="ionicons/alinhar-texto-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('justify')" style="display: block;"><img src="ionicons/alinhar-texto-justificado-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="apagarElementos" onclick="apagarElementosSelecionados()" style="display: none;"><img src="ionicons/trash-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="ionicons/expando-elemens-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="ionicons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div>
+    </div>
+
+    <div id="janelaEditarAcoes" class="janela">
+        <table>
+            <tr>
+                <th><input type="checkbox" title="Ocultar/Desocultar todas Acoes" onclick="ocultarDesocultarAcoes('todos', this)" checked></th>
+                <th style="padding-left: 13px;">Acao</th>
+                <th>Descricao</th>
+                <th>Parametros</th>
+            </tr>
+            <tr>
+                <td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="4"><hr></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" onclick="ocultarDesocultarAcoes('ima', this)" checked></td>
+                <td><div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="ionicons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div></td>
+                <td>Ima entre elementos</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" onclick="ocultarDesocultarAcoes('proporcaoExpancao', this)" checked></td>
+                <td><div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="ionicons/expando-elemens-outline.svg" class="svg-sm" alt=""></div></td>
+                <td>Aumentar proporcao de elementos internos ao expandir</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" onclick="ocultarDesocultarAcoes('apagarElementos', this)" checked></td>
+                <td><div class="botaoAcao" nomeAcao="apagarElementos"><img src="ionicons/trash-outline.svg" class="svg-sm" alt=""></div></td>
+                <td>Apagar elementos selecionados</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="janelaEditarReferencias" class="janela">
+        Nada aqui por enquanto
+    </div>
+
+    <div id="janelaControleArquivo" class="janela">
+        <div id="cabecalhojanelaControleArquivo" class="janelaHead">
+            <div id="cabecalhoJanelaControleArquivoSalvar" class="janHeadSelect" onclick="alterarJanelaInterna('janelaControleArquivo', 'salvar')">Salvar</div>
+            <hr>
+            <div id="cabecalhoJanelaControleArquivoExportar" onclick="alterarJanelaInterna('janelaControleArquivo', 'exportar')">Exportar</div>
+            <hr>
+            <div id="cabecalhoJanelaControleArquivoImportar" onclick="alterarJanelaInterna('janelaControleArquivo', 'importar')">Importar/Novo</div>
+            <hr>
+            <button class="botaoFecharJanela" onclick="fecharJanela('janelaControleArquivo')">X</button>
+        </div>
+        <div id="janelaControleArquivoSalvar" class="bodyjanelaControleArquivo janelaBody janBodySelect">
+            <input type="checkbox" id="mostrarSalvar" class="mostrarSalvar" onclick="salvarMostrarOuNaoNovamente(this)">
+            <label for="mostrarSalvar">Não mostrar isso novamente</label>
+            <hr style="margin-top: 10px; margin-bottom: 10px;">
+            <br>
+            <button onclick="salvarModoArquivo()">Arquivo</button>
+            <button onclick="salvarModoCookie()">Cookie</button>
+            <button onclick="salvarModoLocalStorage()">Local</button>
+            <button onclick="abrirFecharJanela('janelaControleArquivo');">Cancelar</button>
+        </div>
+        <div id="janelaControleArquivoExportar" class="bodyjanelaControleArquivo janelaBody">
+            <button onclick="salvarModoArquivo(true)">HTML</button>
+            <button onclick="exportarModoPng()">PNG</button>
+        </div>
+        <div id="janelaControleArquivoImportar" class="bodyjanelaControleArquivo janelaBody">
+            <button>Novo Pojeto</button>
+            <button onclick="importarArquivo()">Abrir Arquivo Escolhido</button>
+            <br>
+            <input type="file" id="fileInput">
+        </div>
+    </div>
+
+    <div id="janelaArvoreElementos" class="janela">
+        
+    </div>
+
+    <div id="janelaCriarEvento" class="janela">
+        <select id="ondeAtribuirNovoEvento">
+            <option value="novo">Novo elemento</option>
+            <option value="selecionado">Atribuir ao elemento clicado</option>
+        </select>
+        <input id="nomeNovoEvento" type="text">
+        <br>
+        <button onclick="fecharJanela('janelaCriarEvento')">Cancelar</button>
+        <button onclick="criarEvento()">Ok</button>
+    </div>
+
+    <script>
+        var janelaAtual = "desk";
+        var ferramenta = "selecao"; //ou retangulo, linha, texto, tabela
+        var contexto = document;
+        var modalAtual = [];
+        var velocidadeMovimentacao = 50;
+        var segurandoBotaoEsquerdoMouse = -1;
+        var segurandoCtrl = false;
+        var segurandoShift = false;
+        var mouseMovimentando = false;
+        var clickedPos = [-1, -1];
+        var qtdElementosSelecionados = 0;
+        var areaTotalElementosSelecionados = [0, 0, 0, 0];
+        var ordemElementosSelecionados = [];
+        var celulaTabelaClicada = null;
+        var elementosCopiados = [];
+        var bufferCtrlZ = [];
+        var acoes = {ima: false, proporcaoExpancao: false};
+        var configuracoes = {mostrarSalvar: true, modoSalvar: ''};
+        var elementoSelecao = document.getElementById("elementoSelecao");
+        var elementoSelecionados = document.getElementById("elementoSelecionados");
+
+        var janelaEditarAcoes = document.getElementById("janelaEditarAcoes");
+        var janelaEditarElemento = document.getElementById("janelaEditarElemento");
+
+
+        redminJanelaAcoes();
+
+        function abrirJanela(id, el=null){
+            if(el == null){
+                el = document.getElementById(id);
+            }
+            
+            el.style.display = "block";
+            if (id == "janelaEditarElemento"){
+                redminJanelaAcoes();
+            } else if (id == "janelaEditarAcoes"){
+                el.style.left = (window.innerWidth-el.getBoundingClientRect().width)/2 + "px";
+                el.style.top = (window.innerHeight-el.getBoundingClientRect().height)/2 + "px";
+            }
+        }
+
+        function fecharJanela(id, el=null){
+            if(el == null){
+                el = document.getElementById(id);
+            }
+
+            el.style.display = "none";
+            if (id == "janelaEditarElemento"){
+                redminJanelaAcoes();
+            }
+        }
+
+        function abrirFecharJanela(id){
+            var el = document.getElementById(id);
+            if (window.getComputedStyle(el).getPropertyValue('display') == "none"){
+                abrirJanela(id, el);
+            }else{
+                fecharJanela(id, el);
+            }
+        }
+
+        function alterarJanelaInterna(janela, janelaInterna){
+            Array.prototype.forEach.call(document.querySelector("#cabecalho" + janela).querySelectorAll("div"), function(el){
+                if (el.getAttribute("id").toLowerCase().includes(janelaInterna)){
+                    el.classList.add("janHeadSelect");
+                }else{
+                    el.classList.remove("janHeadSelect");
+                }
+            });
+
+            Array.prototype.forEach.call(document.getElementById(janela).querySelectorAll(".janelaBody"), function(el){
+                if (el.getAttribute("id").toLowerCase().includes(janelaInterna)){
+                    el.classList.add("janBodySelect");
+                }else{
+                    el.classList.remove("janBodySelect");
+                }
+            });
+        }
+
+        function alterarReferenciasElemento(elb){
+            var ref = elb.id.replace("Salvar", "");
+            input = document.getElementById(ref);
+            novoValor = input.value;
+
+            atributoAlterar = "";
+            if (ref == "editarElementoId"){
+                // Por enquando nao vou liberar para alterar, porque e bem mais complexo
+            }else if (ref == "editarElementoNome"){
+                atributoAlterar = "name";
+            }else if (ref == "editarElementoGrupo"){
+                atributoAlterar = "grupo";
+            }else if (ref == "editarElementoEvento"){
+                atributoAlterar = "evento";
+            }else if (ref == "editarElementoEventoPertencente"){
+                atributoAlterar = "eventopert";
+            }
+
+            if (novoValor.trim() != ""){
+                if (atributoAlterar != ""){
+                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                        if (el.getAttribute(atributoAlterar) != novoValor){
+                            valorAntigo = el.getAttribute(atributoAlterar);
+
+                            //Validacoes
+                            if (atributoAlterar == "eventopert" && el.getAttribute("evento") == novoValor){
+                                input.value = "";
+                                window.alert("Não pode atribuir um evento pertencente para um elemento que tenha esse mesmo nome no evento - Nesse caso '" + novoValor + "'");
+                            }else if(atributoAlterar == "evento" && el.getAttribute("eventopert") == novoValor){
+                                input.value = "";
+                                window.alert("Não pode atribuir um evento para um elemento que ja pertenca a esse evento - Nesse caso '" + novoValor + "'");
+                            }else{
+                                //Alterar o proprio atributo
+                                if (valorAntigo == null){valorAntigo = ""}
+                                el.setAttribute(atributoAlterar, novoValor);
+                                if (atributoAlterar != "eventopert"){
+                                    Array.prototype.forEach.call(document.querySelectorAll('[' + atributoAlterar + '="' + valorAntigo + '"]'), function(elt){
+                                        elt.setAttribute(atributoAlterar, novoValor);
+                                    }); 
+                                }
+
+                                //Alterar referncias externas de outros atributos
+                                if (atributoAlterar == "evento"){
+                                    Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + valorAntigo + '"]'), function(elPert){
+                                        elPert.setAttribute("eventopert", novoValor);
+                                    });
+                                }else if (atributoAlterar == "eventopert"){
+                                    var grupo = el.getAttribute("grupo");
+                                    if (grupo == null){ grupo = "";}
+                                    if (grupo.trim() != ""){
+                                        // Nao sei aqui, se todos os itens do grupo devem ter o mesmoevento pert, nao tem recursao para essa situacao pois ia entrar em loop infinito
+                                    }
+                                }
+                            }     
+                        }
+                    })
+                }
+            }else{
+                if (atributoAlterar != ""){
+                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                        if (el.getAttribute(atributoAlterar) != novoValor){
+                            el.removeAttribute(atributoAlterar);  
+                        }
+                    })
+                }
+            }
+
+            elb.style.display = "none";
+            input.style.width = "100%";
+        }
+
+        function abrirSalvarReferenciasElemento(el){
+            if (el.id != "editarElementoId"){
+                var botao = document.getElementById(el.id + "Salvar")
+                el.style.width = "79%";
+                botao.style.display = "inline";
+            }
+        }
+
+        function marcarConjuntoCheckbox(grupo, ceck=true, tipoGrupo=".class"){
+            caixas = document.querySelectorAll(grupo);
+            Array.prototype.forEach.call(caixas, function(cx){
+                cx.checked = check;
+            });
+        }
+
+        function baixarArquivo(conteudo){
+
+        }
+
+        function salvarModoArquivo(baixarVisualizacao=false){
+            console.log("salvar arquivo");
+            var conteudo = ``;
+            
+            let link = document.createElement('a');
+            if (baixarVisualizacao){
+                conteudo = conteudo + document.querySelector("style").outerHTML;
+                link.download = 'arquivo.html';
+            }else{
+                link.download = 'arquivo.txt';
+            }
+
+            Array.prototype.forEach.call(document.querySelectorAll(".elemento"), function(el){
+                conteudo = conteudo + el.outerHTML;
+            })
+
+            let blob = new Blob([conteudo], { type: 'text/plain' });
+            link.href = URL.createObjectURL(blob);
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            configuracoes.modoSalvar = "arquivo";
+        }
+
+        function salvarModoCookie(){
+            console.log("salvar cookiq");
+            configuracoes.modoSalvar = "cookie";
+        }
+
+        function salvarModoLocalStorage(){
+            console.log("salvar local");
+            configuracoes.modoSalvar = "localstorage";
+        }
+
+        function salvarMostrarOuNaoNovamente(check){           
+            if (check.checked === true){
+                configuracoes.mostrarSalvar = false;
+            }else{
+                configuracoes.mostrarSalvar = true;
+            }
+            marcarConjuntoCheckbox("mostrarSalvar", check=check.checked);
+        }
+        
+        function exportarModoPng(){
+
+        }
+
+        function importarArquivo(){
+            var fileInput = document.getElementById("fileInput");
+            var file = fileInput.files[0];
+            if (file != null){
+                
+                const reader = new FileReader();
+                reader.readAsText(file);        
+
+                reader.onload = (event) => {
+                    var conteudo = event.target.result;
+                    document.querySelectorAll(".elemento").forEach(el => el.remove());
+
+                    document.body.innerHTML = document.body.innerHTML + conteudo;
+
+                    elementoSelecao = document.getElementById("elementoSelecao");
+                    elementoSelecionados = document.getElementById("elementoSelecionados");
+                    janelaEditarAcoes = document.getElementById("janelaEditarAcoes");
+                    janelaEditarElemento = document.getElementById("janelaEditarElemento");
+                };
+
+                fecharJanela("janelaControleArquivo");
+            }
+        }
+
+        function alterarFerramenta(nomeFerramnta){
+            Array.prototype.forEach.call(document.getElementsByClassName("trFerramenta"), function(el){
+                el.style.backgroundColor = "rgb(128, 196, 204)";
+            })
+            document.getElementById("divfer" + nomeFerramnta).style.backgroundColor = "rgb(120, 151, 187)";
+
+            ferramenta = nomeFerramnta;
+        }
+
+        function selecionarAcao(nomeAcao){
+            Array.prototype.forEach.call(document.querySelectorAll('[nomeAcao="' + nomeAcao + '"]'), function(ac){
+                ac.classList.toggle("ativo");
+                if (ac.classList.contains("ativo")){
+                    acoes[nomeAcao] = true;
+                }else{
+                    acoes[nomeAcao] = false;
+                }
+            });
+        }
+
+        function ocultarBotaoAcao(nomeAcao){
+            Array.prototype.forEach.call(document.querySelector('#janelaAcoes').querySelectorAll('[nomeAcao="' + nomeAcao + '"]'), function(el){
+                el.style.display = "none";
+            })
+            redminJanelaAcoes();
+        }
+
+        function desocultarBotaoAcao(nomeAcao){
+            Array.prototype.forEach.call(document.querySelector('#janelaAcoes').querySelectorAll('[nomeAcao="' + nomeAcao + '"]'), function(el){
+                el.style.display = "block";
+            })
+            redminJanelaAcoes();
+        }
+
+        function ocultarDesocultarAcoes(nomeAcao, check){
+            if (nomeAcao == "todos"){
+                Array.prototype.forEach.call(document.querySelector('#janelaAcoes').querySelectorAll(".botaoAcao"), function(botao){
+                    if (check.checked){
+                        botao.style.display = "block";
+                    }else{
+                        botao.style.display = "none";
+                    }
+                });
+                Array.prototype.forEach.call(check.closest("table").querySelectorAll('tr td:nth-child(1)'), function(td){
+                    inp = td.querySelector('input');
+                    if (inp != null){
+                        inp.checked = check.checked;
+                    }
+                });
+                
+            }else{
+                botaoAcao = document.querySelector('#janelaAcoes').querySelectorAll('[nomeAcao="' + nomeAcao + '"]');
+                if (botaoAcao != null){
+                    Array.prototype.forEach.call(botaoAcao, function(el){
+                        if (check.checked){
+                            el.style.display = "block";
+                        }else{
+                            el.style.display = "none";
+                        }
+                    })
+                }
+            }
+            redminJanelaAcoes();
+        }
+
+        function redminJanelaAcoes(){
+            var janelaAcoes = document.querySelector('#janelaAcoes')
+            var botoes = janelaAcoes.querySelectorAll(".botaoAcao");
+            var tamanhoJanela = +window.getComputedStyle(janelaAcoes).getPropertyValue('width').replace("px", "");
+            var tamanhoComBotoes = 0;
+
+            // Reajustar tamanho
+            Array.prototype.forEach.call(botoes, function(botao){
+                if (botao.style.display != "none"){
+                    tamanhoComBotoes = tamanhoComBotoes + 6 + +window.getComputedStyle(botao).getPropertyValue('width').replace("px", "");
+                }
+            });
+
+            if (tamanhoJanela < tamanhoComBotoes){
+                janelaAcoes.style.width = tamanhoComBotoes + "px";
+            }
+
+            // Reajustar posicao
+            if (window.getComputedStyle(janelaEditarElemento).getPropertyValue('display') == "none"){
+                janelaAcoes.style.left = window.innerWidth - janelaAcoes.getBoundingClientRect().width + "px";
+
+            }else{
+                janelaAcoes.style.left = janelaEditarElemento.getBoundingClientRect().x - janelaAcoes.getBoundingClientRect().width + "px";
+            }
+        }
+
+        const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
+            const hex = x.toString(16)
+            return hex.length === 1 ? '0' + hex : hex
+        }).join('')
+
+        function rgbHex(stringRgb){
+            stringRgb = stringRgb.replace("rgb(", "").replace(")", "").trim();
+            stringRgb = stringRgb.split(",");
+
+            return rgbToHex(+stringRgb[0], +stringRgb[1], +stringRgb[2])
+        }
+
+        function atribuirDesatribuirValoresEditorElementosLimpar(){
+            document.getElementById("editarElementoCampoNome").value = "";
+            document.getElementById("editarElementoCampoX").value = "";
+            document.getElementById("editarElementoCampoY").value = "";
+            document.getElementById("editarElementoCampoLar").value = "";
+            document.getElementById("editarElementoCampoAlt").value = "";
+            document.getElementById("editarElementoRadius").value = '0';
+            document.getElementById("editarElementoRadiusCaixa").value = '0';
+            document.getElementById("editarElementoRotate").value = '0';
+            document.getElementById("editarElementoRotateCaixa").value = '0';
+            document.getElementById("editarElementoId").value = "";
+            document.getElementById("editarElementoNome").value = "";
+            document.getElementById("editarElementoGrupo").value = "";
+            document.getElementById("editarElementoEvento").value = "";
+            document.getElementById("editarElementoEventoPertencente").value = "";
+            document.getElementById("editarElementoExpessuraBorda").value = "";
+            document.getElementById("editarElementoCorBorda").value = "#000000";
+            document.getElementById("editarElementoTipoBorda").value = "";
+            document.getElementById("editarElementoCorFundo").value = "#000000";
+        }
+
+        function atribuirDesatribuirValoresEditorElementosMostrar(el){
+            var texto = el.querySelector(".texto");
+            if (texto != null){ document.getElementById("editarElementoCampoNome").value = texto.innerText; }
+            document.getElementById("editarElementoCampoX").value = el.style.left.replace("px", "");
+            document.getElementById("editarElementoCampoY").value = el.style.top.replace("px", "");
+            document.getElementById("editarElementoCampoLar").value = Math.floor(el.getBoundingClientRect().width);
+            document.getElementById("editarElementoCampoAlt").value = Math.floor(el.getBoundingClientRect().height);
+            if (el.style.borderRadius == ''){
+                document.getElementById("editarElementoRadius").value = '0';
+                document.getElementById("editarElementoRadiusCaixa").value = '0';
+            }else{
+                document.getElementById("editarElementoRadius").value = el.style.borderRadius.replace("px", "");
+                document.getElementById("editarElementoRadiusCaixa").value = el.style.borderRadius.replace("px", "");
+            }
+
+            document.getElementById("editarElementoId").value = el.getAttribute("idd");
+            document.getElementById("editarElementoNome").value = el.getAttribute("name");
+            document.getElementById("editarElementoGrupo").value = el.getAttribute("grupo");
+            document.getElementById("editarElementoEvento").value = el.getAttribute("evento");
+            document.getElementById("editarElementoEventoPertencente").value = el.getAttribute("eventopert");
+
+            document.getElementById("editarElementoExpessuraBorda").value = window.getComputedStyle(el).getPropertyValue('border-width').replace("px", "");
+            document.getElementById("editarElementoCorBorda").value = rgbHex(window.getComputedStyle(el).getPropertyValue('border-color'));
+            document.getElementById("editarElementoTipoBorda").value = window.getComputedStyle(el).getPropertyValue('border-style');
+            document.getElementById("editarElementoCorFundo").value = rgbHex(window.getComputedStyle(el).getPropertyValue('background-color'));
+        }
+
+        function atribuirDesatribuirValoresEditorElementos(el){
+            var elTrue = document.querySelectorAll('[selecionado="true"]');
+            if (elTrue.length > 0){
+                if (elTrue.length > 1){
+                    atribuirDesatribuirValoresEditorElementosLimpar();
+                }else{
+                    atribuirDesatribuirValoresEditorElementosMostrar(el);
+                }
+            }else{
+                if (elTrue.length == 1){
+                    atribuirDesatribuirValoresEditorElementosMostrar(el);
+                }else{
+                    atribuirDesatribuirValoresEditorElementosLimpar();
+                }
+            }
+        }
+
+        function atualizarValoresElementoApartirEditorElementos(elctv=null){
+            if (elctv == null){
+                elctv = document.activeElement;
+            }
+            if (elctv.nodeName == 'INPUT'){
+                var activeValue = elctv.getAttribute("activeValue");
+                var activeType = elctv.getAttribute("activeType");
+                if (activeType == null || activeType == ''){
+                    activeType = 'px';
+                }
+
+                if (activeValue == "texto"){
+                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                        elTexto = el.querySelector(".texto");
+                        if (elTexto == null){
+                            elTexto = document.createElement("div");
+                            elTexto.setAttribute("class", "texto");
+                            el.appendChild(elTexto);
+                        }
+                        elTexto.innerHTML = elctv.value
+                    });
+                }else if (activeValue == "persistir"){
+                    abrirSalvarReferenciasElemento(elctv);
+                }else{
+                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                        if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
+                            el.style[activeValue.toString()] = elctv.value + activeType;
+                        }
+                    });
+                }
+            }
+        }
+
+        function atualizarValoresElementoApartirEditorElementosClick(elctv=null){
+            if (elctv == null){
+                elctv = document.activeElement;
+            }
+            if ((elctv.nodeName == 'INPUT' || elctv.nodeName == 'SELECT') && elctv.getAttribute("type") != "checkbox"){
+                var activeValue = elctv.getAttribute("activeValue");
+                var activeType = elctv.getAttribute("activeType");
+                if (activeType == null){
+                    activeType = 'px';
+                }
+
+                Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                    if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
+                        el.style[activeValue.toString()] = elctv.value + activeType;
+                    }
+                });
+            }
+        }
+
+        function atualizarValoresElementoApartirEditorElementosMove(elctv=null){
+            if (elctv == null){
+                elctv = document.activeElement;
+            }
+            if (elctv.nodeName == 'INPUT' && (elctv.getAttribute("type") == "range" || elctv.getAttribute("type") == "color")){
+                var activeValue = elctv.getAttribute("activeValue");
+                var activeType = elctv.getAttribute("activeType");
+                if (activeType == null){
+                    activeType = 'px';
+                }
+
+                Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                    if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
+                        el.style[activeValue.toString()] = elctv.value + activeType;
+                    }
+                });
+            }
+        }
+
+        function editarTabela(direcao){
+            //direcao: addAcima, addAbaixo, addEsquerda, addDireita, remLinha, remColuna
+            if (celulaTabelaClicada != null){
+                var tabela = celulaTabelaClicada.closest(".tabela");
+                var tr = celulaTabelaClicada.closest("tr");
+                rowIndex = tr.rowIndex;
+                colIndex = celulaTabelaClicada.cellIndex;
+                
+                if (direcao == "addAcima"){ 
+                    var novaLinha = `<tr>`;
+                    for (var c=0; c < tr.querySelectorAll("td").length; c++){
+                        novaLinha = novaLinha + `<td><div class="texto"></div></td>`;
+                    }
+                    novaLinha = novaLinha + `</tr>`;
+                    tr.insertAdjacentHTML('beforebegin', novaLinha);
+                    atualizarIndiceLinhasTabela(tabela);
+
+                }else if (direcao == "addAbaixo"){
+                    var novaLinha = `<tr>`;
+                    for (var c=0; c < tr.querySelectorAll("td").length; c++){
+                        novaLinha = novaLinha + `<td><div class="texto"></div></td>`;
+                    }
+                    novaLinha = novaLinha + `</tr>`;
+                    tr.insertAdjacentHTML('afterend', novaLinha);
+                    atualizarIndiceLinhasTabela(tabela);
+
+                }else if (direcao == "addEsquerda"){
+                    for (var c=0; c < tabela.querySelectorAll("tr").length; c ++){
+                        var tdAtual = tabela.rows[c].cells[colIndex];
+                        tdAtual.insertAdjacentHTML('beforebegin', '<td><div class="texto"></div></td>');
+                    }
+                    atualizarIndiceColunasTabela(tabela);
+
+                }else if (direcao == "addDireita"){
+                    for (var c=0; c < tabela.querySelectorAll("tr").length; c ++){
+                        var tdAtual = tabela.rows[c].cells[colIndex];
+                        tdAtual.insertAdjacentHTML('afterend', '<td><div class="texto"></div></td>');
+                    }
+                    atualizarIndiceColunasTabela(tabela);
+
+                }else if (direcao == "remLinha"){
+                    tabela.querySelectorAll("tr")[rowIndex].remove();
+                    if (rowIndex == 0 && tabela.rows.length < 1){
+                        tabela.remove();
+                        celulaTabelaClicada = null;
+                        ocultarBotaoAcao("tabelaLinha");
+                    }else{
+                        if (tabela.rows.length > rowIndex){
+                            celulaTabelaClicada = tabela.rows[rowIndex].cells[colIndex];
+                        }else{
+                            celulaTabelaClicada = tabela.rows[tabela.rows.length-1].cells[colIndex];
+                        }
+                    }
+                    atualizarIndiceLinhasTabela(tabela);
+
+                }else if (direcao == "remColuna"){
+                    Array.prototype.forEach.call(tabela.querySelectorAll(`tr td:nth-child(${colIndex+1})`), function(td){
+                        td.remove();
+                    })
+                    if (colIndex == 0 && tabela.rows[0].cells.length < 1){
+                        tabela.remove();
+                        celulaTabelaClicada = null;
+                        ocultarBotaoAcao("tabelaLinha");
+                    }else{
+                        if (tabela.rows[0].cells.length > colIndex){
+                            celulaTabelaClicada = tabela.rows[rowIndex].cells[colIndex];
+                        }else{
+                            celulaTabelaClicada = tabela.rows[rowIndex].cells[tabela.rows[0].cells.length-1];
+                        }
+                    }
+                    atualizarIndiceColunasTabela(tabela);
+                }
+            }
+        }
+
+        function tabelaMostrarEsconderColunas(check){
+            document.querySelectorAll('.tabela[selecionado="true"]').forEach(function(tabela){
+                if (tabela.getAttribute("indiceColuna") == "true"){
+                    tabela.rows[0].remove();
+                    tabela.setAttribute("indiceColuna", false);
+                }else{
+                    var novo = `<tr>`;
+                    var count = 1;
+                    if (tabela.getAttribute("indiceLinha") == "true"){
+                        count = 0;
+                    }
+                    console.log(tabela.querySelector("tr"))
+                    Array.prototype.forEach.call(tabela.querySelector("tr").getElementsByTagName("td"), function(td){
+                        novo = novo + `<td style="background-color: rgb(70, 120, 165); text-align: center;">${count}</td>`;
+                        count ++;
+                    });
+                    novo = novo + `</tr>`;
+                    console.log(novo)
+                    tabela.insertAdjacentHTML("afterbegin", novo);
+                    tabela.setAttribute("indiceColuna", true);
+                }
+            });
+        }
+
+        function tabelaMostrarEsconderLinhas(check){
+            document.querySelectorAll('.tabela[selecionado="true"]').forEach(function(tabela){
+                if (tabela.getAttribute("indiceLinha") == "true"){
+                    Array.prototype.forEach.call(tabela.getElementsByTagName("tr"), function(tr){
+                        tr.firstChild.remove();
+                    });
+                    tabela.setAttribute("indiceLinha", false);
+                }else{
+                    var count = 1;
+                    if (tabela.getAttribute("indiceColuna") == "true"){
+                        count = 0;
+                    }
+                    Array.prototype.forEach.call(tabela.getElementsByTagName("tr"), function(tr){
+                        var novo = `<td style="background-color: rgb(70, 120, 165); padding-left:5px; padding-right:5px;">${count}</td>`;
+                        count ++;
+                        tr.insertAdjacentHTML("afterbegin", novo);
+                    })
+                    tabela.setAttribute("indiceLinha", true);
+                }
+            });
+        }
+
+        function atualizarIndiceLinhasTabela(tabela){
+            if (tabela.getAttribute("indiceLinha") == "true"){
+                var count = 1;
+                if (tabela.getAttribute("indiceColuna") == "true"){
+                    count = 0;
+                }
+                Array.prototype.forEach.call(tabela.getElementsByTagName("tr"), function(tr){
+                    console.log(tr)
+                    tr.querySelector("td").outerHTML = `<td style="background-color: rgb(70, 120, 165); padding-left:5px; padding-right:5px;">${count}</td>`;
+                    count ++;
+                })
+            }
+        }
+
+        function atualizarIndiceColunasTabela(tabela){
+            if (tabela.getAttribute("indiceColuna") == "true"){
+                var count = 1;
+                if (tabela.getAttribute("indiceLinha") == "true"){
+                    count = 0;
+                }
+                Array.prototype.forEach.call(tabela.querySelector("tr").getElementsByTagName("td"), function(td){
+                    td.outerHTML = `<td style="background-color: rgb(70, 120, 165); text-align: center;">${count}</td>`;
+                    count ++;
+                });
+            }
+        }
+
+        function formatarTexto(formato){
+            if (celulaTabelaClicada != null){
+                celulaTabelaClicada.querySelector(".texto").style.textAlign = formato;
+            }
+            Array.prototype.forEach.call(document.querySelectorAll('.texto[selecionado="true"]'), function(el){
+                el.style.textAlign = formato;
+            });
+        }
+
+        function criarEvento(evt){
+            nomeNovoEvento = document.getElementById("nomeNovoEvento").value;
+            if (nomeNovoEvento != ""){
+                if (document.getElementById('ondeAtribuirNovoEvento').value == 'novo'){
+                    alterarFerramenta("retangulo");
+                    var el = criarElemento(evt, 200, 200, 100, 50);
+                    el.setAttribute("evento", nomeNovoEvento);
+                    alterarFerramenta("selecao");
+                }else{
+                    var el = document.querySelector('[selecionado="true"]').setAttribute("evento", nomeNovoEvento);
+                }
+                abrirFecharJanela("janelaCriarEvento");
+            }
+        }
+
+        function alinharElementos(formato){
+            if (celulaTabelaClicada != null){
+                celulaTabelaClicada.querySelector(".texto").style.textAlign = formato;
+            }
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                
+                if(formato == "top"){
+                    if(el.style.alignItems == ""){
+                        el.style.alignItems = "center";
+                        el.style.display = "flex";
+                    }else{
+                        el.style.alignItems = "";
+                        if (el.style.justifyContent == ""){
+                            el.style.display = "";
+                        }
+                    }
+                }else if(formato == "left"){
+                    if(el.style.justifyContent == ""){
+                        el.style.justifyContent = "center";
+                        el.style.display = "flex";
+                    }else{
+                        el.style.justifyContent = "";
+                        if (el.style.alignItems == ""){
+                            el.style.display = "";
+                        }
+                    }
+                }
+            });
+        }
+
+        function retrairExpandirElementos(el, retrair, xp, yp){
+            if (retrair){
+                el.style.left = +el.style.left.replace("px", "") - xp + "px";
+                el.style.top = +el.style.top.replace("px", "") - yp + "px";
+                //Tem que fazer aqui buscando as referencias de linha e ocultando as linhas
+                //Ou sera que as linhas dai recebem a posicao do elemento pai?
+                el.style.display = "none";
+            }else{
+                el.style.display = "block";
+                //Dai aqui a linha tambem seria recolocadas em tela ou recebendo as posicoes dos elementos correspondentes
+                el.style.left = +el.style.left.replace("px", "") + xp + "px";
+                el.style.top = +el.style.top.replace("px", "") + yp + "px";
+            }
+            
+            var evento = el.getAttribute("evento")
+            if (evento == null){ evento = ''}
+            if (evento.trim() == ""){
+                return;
+            }
+
+            Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + el.getAttribute('evento') + '"]'), function(elf){
+                retrairExpandirElementos(elf, retrair, xp, yp);
+            });
+        }
+
+        function retrairExpandirElementosSelecionados(id=""){
+            var listaElementos = [];
+            if (id == ""){
+                listaElementos = document.querySelectorAll('[selecionado="true"]');
+            }else{
+                listaElementos = document.querySelectorAll('[idd="' + id + '"]');
+            }
+
+            Array.prototype.forEach.call(listaElementos, function(el){
+                if (el.getAttribute("evento") != null){
+                    var retrair = false;
+                    if (el.getAttribute("altexpand") == null){
+                        retrair = true;
+                        el.setAttribute("altexpand", el.style.height);
+                        el.style.height = "30px";
+                        //Se tiver linha referencias cuidar para que a linha nao fique fora do elemento, ja que o mesmo vai diminuir de tamamho
+                    }else{
+                        el.style.height = el.getAttribute("altexpand");
+                        el.removeAttribute("altexpand");
+                    }
+                    Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + el.getAttribute('evento') + '"]'), function(elf){
+                        retrairExpandirElementos(elf, retrair, Math.floor(+el.style.left.replace("px", "")), Math.floor(+el.style.top.replace("px", "")));
+                    });
+                }
+            });
+        }
+
+        /*function retornarPosicaoParentElemento(el){
+            //x e y de BODY é zero entao nao interfere em nada fazer contas com esse elemento
+            console.log(el.getBoundingClientRect().x, el.getBoundingClientRect().y, el.getBoundingClientRect().width, el.getBoundingClientRect().height)
+            var parent = el
+            var ultimox, ultimoy = 0;
+            pos = {x: 0, y: 0};
+            pos.x = pos.x + parent.offsetLeft;
+                pos.y = pos.y + parent.offsetTop;
+
+            while (parent.tagName != "BODY"){
+                console.log(pos)
+                pos.x = pos.x + parent.offsetLeft;
+                pos.y = pos.y + parent.offsetTop;
+                ultimox = parent.offsetLeft;
+                ultimoy = parent.offsetTop
+                parent = parent.parentElement
+            }
+            //if (pos.x > 0){
+                //pos.x = pos.x - ultimox;
+            //}
+            //if (pos.y > 0){
+                //pos.y = pos.y - ultimoy;
+            //}
+            return pos;
+        }
+
+        function retornarPosicaoCorrecaoScrool(el){
+
+        }*/
+
+        /*function mxx(el){
+            var parent = el.parentElement
+            
+            if (parent.tagName == "BODY"){
+                return 0;
+            }else{
+                var pos = 0;
+                console.log('e', el.getBoundingClientRect().x)
+
+                while (parent.tagName != "BODY"){
+                    console.log(parent)
+                    console.log(pos, pos + parent.getBoundingClientRect().x)
+                    pos = pos + parent.getBoundingClientRect().x;
+                    parent = parent.parentElement;
+                    console.log(pos, parent.getBoundingClientRect().x)
+                }
+
+                return pos
+            }
+        }*/
+
+        function mxx(el, mx){
+            if (contexto == document){
+                return mx - 0 //el.getBoundingClientRect().x - +el.style.left.replace("px", "");
+            }else{               
+                return mx - contexto.getBoundingClientRect().x //+ ((el.getBoundingClientRect().x - contexto.getBoundingClientRect().x) - +el.style.left.replace("px", ""));
+            }
+        }
+
+        function myy(el, my){
+            if (contexto == document){
+                return my - 0;//el.getBoundingClientRect().y - +el.style.top.replace("px", "");
+            }else{
+                return my - contexto.getBoundingClientRect().y//contexto.getBoundingClientRect().y + ((el.getBoundingClientRect().y - contexto.getBoundingClientRect().y) - +el.style.top.replace("px", "")); // os 20 eh a soma com o cabecalho
+            }
+        }
+
+        function movimentarElementos(direcao){
+            if (ferramenta != "texto" && ferramenta != "texto_editar"){
+                cx = contexto.getElementsByClassName("elemento");
+
+                if (direcao == 'w'){
+                    Array.prototype.forEach.call(cx, function(el) {
+                        if (el.getAttribute("eventopert") != null){
+                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
+                                el.style.top = +el.style.top.replace("px", "") + velocidadeMovimentacao + "px";
+                            }
+                        }else{
+                            el.style.top = +el.style.top.replace("px", "") + velocidadeMovimentacao + "px";
+                        }
+                    });
+                }else if (direcao == 'a'){
+                    Array.prototype.forEach.call(cx, function(el) {
+                        if (el.getAttribute("eventopert") != null){
+                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
+                                el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";
+                            }
+                        }else{
+                            el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";        
+                        }
+                    });  
+                }else if (direcao == 's'){
+                    Array.prototype.forEach.call(cx, function(el) {
+                        if (el.getAttribute("eventopert") != null){
+                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
+                                el.style.top = +el.style.top.replace("px", "") - velocidadeMovimentacao + "px";
+                            }
+                        }else{
+                            el.style.top = +el.style.top.replace("px", "") - velocidadeMovimentacao + "px";
+                        }
+                    });  
+                }else if (direcao == 'd'){
+                    Array.prototype.forEach.call(cx, function(el) {
+                        if (el.getAttribute("eventopert") != null){
+                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
+                                el.style.left = +el.style.left.replace("px", "") - velocidadeMovimentacao + "px";
+                            }
+                        }else{
+                            el.style.left = +el.style.left.replace("px", "") - velocidadeMovimentacao + "px";
+                        }
+                    });  
+                }
+            }
+        }
+
+        function retornarAreaSelecao(clickedPos1_x=0, clickedPos1_y=0, clickedPos2_x=0, clickedPos2_y=0){
+            area = [0, 0, 0, 0];
+
+            if (clickedPos2_x >= clickedPos1_x){
+                area[0] = clickedPos1_x;
+                area[2] = clickedPos2_x - clickedPos1_x;
+            }else{
+                area[0] = clickedPos2_x;
+                area[2] = clickedPos1_x - area[0];
+            }
+
+            if (clickedPos2_y >= clickedPos1_y){
+                area[1] = clickedPos1_y;
+                area[3] = clickedPos2_y - clickedPos1_y;
+            } else{
+                area[1] = clickedPos2_y;
+                area[3] = clickedPos1_y - area[1];
+            }
+
+            return area;
+        }
+
+        function criarElemento(evt, left=-1, top=-1, lar=-1, alt=-1){
+            newDiv = document.createElement("div");
+            
+            //TEM Q MELHORAR AQUI SE LAR OU ALT FOR MENOR QUE O PONTO NAO VAI MOSTRAR A LINHA
+            if (lar == -1){
+                lar = evt.clientX;
+            }
+            if (alt == -1){
+                alt = evt.clientY;
+            }
+
+            if (left == -1){
+                left = evt.clientX;
+            }else{
+                lar = lar - left;
+            }
+            if (top == -1){
+                top = evt.clientY;
+            }else{
+                alt = alt - top;
+            }
+
+            if (ferramenta == "retangulo"){
+                newDiv.setAttribute("class", "elemento retangulo");
+                newDiv.style.width = "100px";
+                newDiv.style.height = "100px";
+            } else if (ferramenta == "linha"){
+                newDiv = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+                var s = "<line idd='l" + Date.now() + "' x1='0' y1='0' x2='" + lar + "' y2='" + alt + "' style='stroke: black; stroke-width: 5;'></line>"
+                newDiv.innerHTML = s;
+                /*newLinha = document.createElement("line");
+                newLinha.setAttribute('idd', l + Date.now());
+                newLinha.setAttribute('x1', 0);
+                newLinha.setAttribute('y1', 0);
+                newLinha.setAttribute('x2', lar);
+                newLinha.setAttribute('y2', alt);
+                newLinha.style.stroke = 'black';
+                newLinha.style.strokeWidth = '5px';
+                newDiv.appendChild(newLinha);*/
+                newDiv.setAttribute("class", "elemento linha");
+                newDiv.setAttribute("offset_x1", 0);
+                newDiv.setAttribute("offset_y1", 0);
+                newDiv.setAttribute("offset_x2", 0);
+                newDiv.setAttribute("offset_y2", 0);
+                newDiv.setAttribute("width", lar);
+                newDiv.setAttribute("height", alt);
+
+                if (evt.target.classList.contains("elementoEdicao")){
+
+                    //Criar as referencias para a nova linha
+
+                }
+
+            } else if (ferramenta == "tabela"){
+                newDiv = document.createElement("table");
+                newDiv.setAttribute("class", "elemento tabela");
+                newDiv.innerHTML = "<tr><td><div class='texto'></div></td></tr>"
+            } else if (ferramenta == "imagem"){
+                newDiv.setAttribute("class", "elemento imagem");
+                newDiv.style.width = "100px";
+                newDiv.style.height = "100px";
+                newDiv.innerHTML = "<input type='file' class='fileInput' onclick='abrirInputImagem(this)'>";
+            }else if (ferramenta == "grafico"){
+                newDiv.setAttribute("class", "elemento grafico");
+                newDiv.style.width = "100px";
+                newDiv.style.height = "100px";
+            }
+
+            newDiv.setAttribute("selecionado", false);
+            newDiv.setAttribute("offset_x", 0);
+            newDiv.setAttribute("offset_y", 0);
+            newDiv.setAttribute("idd", Date.now());
+
+            if (contexto == document){
+                newDiv.style.left = left + "px";
+                newDiv.style.top = top + "px";
+                document.body.appendChild(newDiv);
+            }else{
+                newDiv.style.left = left - contexto.getBoundingClientRect().x + "px";
+                newDiv.style.top = top  - contexto.getBoundingClientRect().y + "px";
+                contexto.appendChild(newDiv);
+            }
+
+            if (ferramenta == 'linha'){
+                reajustarCaixaElementoLinha(newDiv);
+            }else if(ferramenta == "texto"){
+                newDiv.setAttribute("class", "elemento texto");
+                editarTexto(newDiv);
+            }
+
+            return newDiv;
+        }
+
+        function movimentarElementoXY1(evt, el){
+            var offset_x1_calc = mxx(el.parentElement, evt.clientX) + +el.parentElement.getAttribute("offset_x") + +el.getAttribute("offset_x1");
+            var offset_y1_calc = myy(el.parentElement, evt.clientY) + +el.parentElement.getAttribute("offset_y") + +el.getAttribute("offset_y1");
+
+            if (offset_x1_calc <= +el.parentElement.style.left.replace("px", '')){
+                el.setAttribute("x1", 0);
+            }else{
+                el.setAttribute("x1", offset_x1_calc-+el.parentElement.style.left.replace("px", ''));
+            }
+
+            if (offset_y1_calc <= +el.parentElement.style.top.replace("px", '')){
+                el.setAttribute("y1", 0);
+            }else{
+                el.setAttribute("y1", offset_y1_calc-+el.parentElement.style.top.replace("px", ''));
+            }
+            
+            if(offset_x1_calc < +el.parentElement.style.left.replace("px", '')){              
+                Array.prototype.forEach.call(el.parentElement.querySelectorAll("line"), function(elLinha) {
+                    if (elLinha !== el){
+                        elLinha.setAttribute("x1", +el.parentElement.style.left.replace("px", '') - offset_x1_calc + +elLinha.getAttribute("x1"));
+                        elLinha.setAttribute("x2", +el.parentElement.style.left.replace("px", '') - offset_x1_calc + +elLinha.getAttribute("x2"));
+                    }else{
+                        elLinha.setAttribute("x2", +el.parentElement.style.left.replace("px", '') - offset_x1_calc + +elLinha.getAttribute("x2"));
+                    }
+                });
+                el.parentElement.style.left = mxx(el.parentElement, evt.clientX) + +el.parentElement.getAttribute("offset_x") + +el.getAttribute("offset_x1") + "px";
+            }
+
+            if (offset_y1_calc < +el.parentElement.style.top.replace("px", '')){
+                Array.prototype.forEach.call(el.parentElement.querySelectorAll("line"), function(elLinha) {
+                    if (elLinha !== el){
+                        elLinha.setAttribute("y1", +el.parentElement.style.top.replace("px", '') - offset_y1_calc + +elLinha.getAttribute("y1"));
+                        elLinha.setAttribute("y2", +el.parentElement.style.top.replace("px", '') - offset_y1_calc + +elLinha.getAttribute("y2"));
+                    }else{
+                        elLinha.setAttribute("y2", +el.parentElement.style.top.replace("px", '') - offset_y1_calc + +elLinha.getAttribute("y2"));
+                    }
+                });
+                el.parentElement.style.top = myy(el.parentElement, evt.clientY) + +el.parentElement.getAttribute("offset_y") + +el.getAttribute("offset_y1") + "px";
+            }
+
+            var svgBox = el.parentElement.getBBox();
+            el.parentElement.setAttribute("width", svgBox.x + svgBox.width + svgBox.x);
+            el.parentElement.setAttribute("height", svgBox.y + svgBox.height + svgBox.y);
+        }
+        
+        function movimentarElementoXY2(evt, el){
+            var offset_x2_calc = mxx(el.parentElement, evt.clientX) + +el.parentElement.getAttribute("offset_x") + +el.getAttribute("offset_x2");
+            var offset_y2_calc = myy(el.parentElement, evt.clientY) + +el.parentElement.getAttribute("offset_y") + +el.getAttribute("offset_y2");
+
+            if (offset_x2_calc <= +el.parentElement.style.left.replace("px", '')){
+                el.setAttribute("x2", 0);
+            }else{
+                el.setAttribute("x2", offset_x2_calc-+el.parentElement.style.left.replace("px", ''));
+            }
+
+            if (offset_y2_calc <= +el.parentElement.style.top.replace("px", '')){
+                el.setAttribute("y2", 0);
+            }else{
+                el.setAttribute("y2", offset_y2_calc-+el.parentElement.style.top.replace("px", ''));
+            }
+
+            if(offset_x2_calc < +el.parentElement.style.left.replace("px", '')){              
+                Array.prototype.forEach.call(el.parentElement.querySelectorAll("line"), function(elLinha) {
+                    if (elLinha !== el){
+                        elLinha.setAttribute("x1", +el.parentElement.style.left.replace("px", '') - offset_x2_calc + +elLinha.getAttribute("x1"));
+                        elLinha.setAttribute("x2", +el.parentElement.style.left.replace("px", '') - offset_x2_calc + +elLinha.getAttribute("x2"));
+                    }else{
+                        elLinha.setAttribute("x1", +el.parentElement.style.left.replace("px", '') - offset_x2_calc + +elLinha.getAttribute("x1"));
+                    }
+                });
+                el.parentElement.style.left = mxx(el.parentElement, evt.clientX) + +el.parentElement.getAttribute("offset_x") + +el.getAttribute("offset_x2") + "px";
+            }
+
+            if (offset_y2_calc < +el.parentElement.style.top.replace("px", '')){
+                Array.prototype.forEach.call(el.parentElement.querySelectorAll("line"), function(elLinha) {
+                    if (elLinha !== el){
+                        elLinha.setAttribute("y1", +el.parentElement.style.top.replace("px", '') - offset_y2_calc + +elLinha.getAttribute("y1"));
+                        elLinha.setAttribute("y2", +el.parentElement.style.top.replace("px", '') - offset_y2_calc + +elLinha.getAttribute("y2"));
+                    }else{
+                        elLinha.setAttribute("y1", +el.parentElement.style.top.replace("px", '') - offset_y2_calc + +elLinha.getAttribute("y1"));
+                    }
+                });
+                el.parentElement.style.top = myy(el.parentElement, evt.clientY) + +el.parentElement.getAttribute("offset_y") + +el.getAttribute("offset_y2") + "px";
+            }
+
+            var svgBox = el.parentElement.getBBox();
+            el.parentElement.setAttribute("width", svgBox.x + svgBox.width + svgBox.x);
+            el.parentElement.setAttribute("height", svgBox.y + svgBox.height + svgBox.y);
+        }
+
+        function movimentarEvento(el, mx, my){
+            if (el.getAttribute("altexpand") == null){
+                var evento = el.getAttribute("evento")
+                if (evento == null){ evento = ''}
+                if (evento.trim() == ""){
+                    return;
+                }else{
+                    Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + evento + '"]'), function(eln){
+                        eln.style.left = mx + +eln.getAttribute("offset_x") + "px";
+                        eln.style.top = my + +eln.getAttribute("offset_y") + "px";
+                        movimentarEvento(eln, mx, my);
+                    });
+                }
+            }
+        }
+
+        function movimentarGrupo(el, mx, my){
+            Array.prototype.forEach.call(document.querySelectorAll('[grupo="' + el.getAttribute("grupo") + '"]'), function(elg){
+                if (elg != el){
+                    elg.style.left = mx + +elg.getAttribute("offset_x") + "px";
+                    elg.style.top = my + +elg.getAttribute("offset_y") + "px";
+                }
+                var evento = elg.getAttribute("evento")
+                if (evento == null){ evento = ''}
+                if (!evento.trim() == ""){
+                    movimentarEvento(elg, mx, my);
+                }
+            });
+        }
+
+        function movimentarElementosSelecionados(evt){
+            //triangulosRefs = {};
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                mx = mxx(el, evt.clientX); my = myy(el, evt.clientY);
+                el.style.left = mx + +el.getAttribute("offset_x") + "px";
+                el.style.top = my + +el.getAttribute("offset_y")+ "px";
+                movimentarEvento(el, mx, my);
+                movimentarGrupo(el, mx, my);
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionadoxy1="true"]'), function(el) {
+                movimentarElementoXY1(evt, el);
+                //if (el.parentElement.querySelector('[idLinha="' + el.getAttribute("idd") + '"]') != null){
+                    //triangulosRefs[el.getAttribute("idd")] = [Math.floor(+el.getAttribute("x1")), Math.floor(+el.getAttribute("y1")), Math.floor(+el.getAttribute("x2")), Math.floor(+el.getAttribute("y2"))];
+                //}
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionadoxy2="true"]'), function(el) {
+                movimentarElementoXY2(evt, el);
+                //if (el.parentElement.querySelector('[idLinha="' + el.getAttribute("idd") + '"]') != null){
+                    //triangulosRefs[el.getAttribute("idd")] = [Math.floor(+el.getAttribute("x1")), Math.floor(+el.getAttribute("y1")), Math.floor(+el.getAttribute("x2")), Math.floor(+el.getAttribute("y2"))];
+                //}
+            });
+
+            //atualizarPosicaoTriangulos(triangulosRefs)
+        }
+
+        function atualizarPosicaoTriangulos(triangulosRefs){
+            for (let k in triangulosRefs){
+                elSeta = document.querySelector('[idLinha="' + k + '"]');
+
+                xc = (triangulosRefs[k][0] + triangulosRefs[k][2]) / 2
+                yc = (triangulosRefs[k][1] + triangulosRefs[k][3]) / 2
+                
+                dx1 = triangulosRefs[k][0] - xc
+                dy1 = triangulosRefs[k][1] - yc
+                dx2 = triangulosRefs[k][2] - xc
+                dy2 = triangulosRefs[k][3] - yc
+
+                angle1 = Math.atan2(dy1, dx1)
+                angle2 = Math.atan2(dy2, dx2)
+
+                angle1 = angle1 * 180 / Math.PI
+                angle2 = angle2 * 180 / Math.PI
+
+                aa = elSeta.style.transform;
+                //elSeta.style.transform = `${aa} rotate(${10}deg)`
+                elSeta.style.transform = `rotate(${angle2}deg)`
+            }
+        }
+
+        function reajustarCaixaElementoLinha(elSvg){
+            if (elSvg.nodeName == "line"){
+                elSvg = elSvg.parentElement;
+            }
+
+            var topLeft = [parseInt(elSvg.getAttribute("width")), parseInt(elSvg.getAttribute("height"))];
+            var larAlt = [0, 0];
+            Array.prototype.forEach.call(elSvg.querySelectorAll("line"), function(el) {
+                if (+el.getAttribute("x1") < topLeft[0]){
+                    topLeft[0] = +el.getAttribute("x1");
+                }
+                if (+el.getAttribute("y1") < topLeft[1]){
+                    topLeft[1] = +el.getAttribute("y1");
+                }
+                if (+el.getAttribute("x2") < topLeft[0]){
+                    topLeft[0] = +el.getAttribute("x2");
+                }   
+                if (+el.getAttribute("y2") < topLeft[1]){
+                    topLeft[1] = +el.getAttribute("y2");
+                }
+                
+                if (+el.getAttribute("x1") > larAlt[0]){
+                    larAlt[0] = +el.getAttribute("x1");
+                }
+                if (+el.getAttribute("x2") > larAlt[0]){
+                    larAlt[0] = +el.getAttribute("x2");
+                }
+
+                if (+el.getAttribute("y1") > larAlt[1]){
+                    larAlt[1] = +el.getAttribute("y1");
+                }
+                if (+el.getAttribute("y2") > larAlt[1]){
+                    larAlt[1] = +el.getAttribute("y2");
+                }
+            });
+
+            topLeft = [Math.floor(topLeft[0]), Math.floor(topLeft[1])];
+            larAlt = [Math.floor(larAlt[0]), Math.floor(larAlt[1])];
+
+            if (topLeft[0] != 0 || topLeft[1] != 0){
+                Array.prototype.forEach.call(elSvg.querySelectorAll("line"), function(el) {
+                    el.setAttribute("x1", +el.getAttribute("x1") - topLeft[0]);
+                    el.setAttribute("x2", +el.getAttribute("x2") - topLeft[0]);
+                    el.setAttribute("y1", +el.getAttribute("y1") - topLeft[1]);
+                    el.setAttribute("y2", +el.getAttribute("y2") - topLeft[1]);
+                });
+                var l = +elSvg.style.left.replace("px", "") + topLeft[0];
+                var t = +elSvg.style.top.replace("px", "") + topLeft[1];
+            }
+
+            elSvg.setAttribute("width", larAlt[0] - topLeft[0]);
+            elSvg.setAttribute("height", larAlt[1] - topLeft[1]);
+            elSvg.style.left = l + "px";
+            elSvg.style.top = t + "px";  
+        }
+
+        function reajustarCaixaElementoReferenciados(){
+            //Faz uma selecao das linhas para que nao nao haja duplicadas na hora de calcular o tamanho
+            listaElRefs = [];
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionadoxy1="true"]'), function(el) {
+                if (!listaElRefs.includes(el.getAttribute('idd'))){
+                    listaElRefs.push(el.getAttribute('idd'));
+                }
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionadoxy2="true"]'), function(el) {
+                if (!listaElRefs.includes(el.getAttribute('idd'))){
+                    listaElRefs.push(el.getAttribute('idd'));
+                }
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                if (el.nodeName == 'svg'){
+                    reajustarCaixaElementoLinha(el)
+                }else{
+                    retornarIdElementosReferenciados(el.getAttribute("refsTo")).forEach(function(r){
+                        if (!listaElRefs.includes(r[0]) && !el.classList.contains("elementoEdicao")){
+                            listaElRefs.push(r[0]);
+                        }
+                    })
+
+                    retornarIdElementosReferenciados(el.getAttribute("refsFrom")).forEach(function(r){
+                        if (!listaElRefs.includes(r[0]) && !el.classList.contains("elementoEdicao")){
+                            listaElRefs.push(r[0]);
+                        }
+                    })
+                }
+            })
+
+            listaElRefs.forEach(function(idd){
+                reajustarCaixaElementoLinha(document.querySelector('[idd="' + idd + '"]'));
+            })
+        }
+
+        function ajustarElementosInternosAoRedimin(el, antigoLar, antigoAlt){
+            grupo = el.getAttribute("grupo")
+            evento = el.getAttribute("evento")
+
+            //Sera tambem buscado aqui e alterado o tamnho quando estiver marcada para alterar modificacoes e lementos com mesmo nome ou memso evento? (conf que ainda nao existe)
+
+            if (grupo != null){
+
+            }
+
+            if (evento != null){
+
+            }
+
+            Array.prototype.forEach.call(el.children, function(elc){
+                var lar = +elc.style.width.replace("px", '');
+                var alt = +elc.style.height.replace("px", '');
+                var fonte = +getComputedStyle(elc).fontSize.replace("px", "");
+                if (lar == 0){ lar = elc.getBoundingClientRect().width }
+                if (alt == 0){ alt = elc.getBoundingClientRect().height }
+                
+                percentLar = (+el.style.width.replace("px", '')-antigoLar)*100/antigoLar;
+                percentAlt = (+el.style.height.replace("px", '')-antigoAlt)*100/antigoAlt;
+
+                elc.style.width = lar + (percentLar * lar / 100) + "px";
+                elc.style.height = alt + (percentAlt * alt / 100) + "px";
+
+                console.log(getComputedStyle(elc).fontSize)
+                elc.style.fontSize = fonte + (percentAlt * fonte / 100) + "px";
+
+                //ajustarElementosInternosAoRedimin(elc, lar, alt);
+            })
+        }
+
+        function mostrarAreaRedminEdicaoElemento(el){
+            elementosInteracao = {};
+        
+            var x = +el.style.left.replace("px", "");
+            var y = +el.style.top.replace("px", "");
+            var lar = el.getBoundingClientRect().width;
+            var alt = el.getBoundingClientRect().height;
+
+            var idd = el.getAttribute("idd");
+            
+
+            if (el.classList.contains('linha')){
+                //console.clear();
+                Array.prototype.forEach.call(el.querySelectorAll("line"), function(elLine) {
+                    const elements = Array.from(document.querySelectorAll('.elementoEdicaoLinha'));
+
+                    var valores = "";
+                    if (elements.length > 0){
+                        valores = elements.map(element => element.getAttribute('refsto'));
+                        valores = valores.join('');
+                    }
+
+                    var refsTo = elLine.getAttribute("refsto");
+                    var refsFrom = elLine.getAttribute("refsfrom");
+                    if (refsTo == null){ refsTo = ''; }
+                    if (refsFrom == null) { refsFrom = ''; }
+                    elementosInteracao[elLine.getAttribute("idd")+'_xy1'] = [+elLine.getAttribute("x1")-5+x, +elLine.getAttribute("y1")-5+y, 10, 10, refsFrom];
+                    elementosInteracao[elLine.getAttribute("idd")+'_xy2'] = [+elLine.getAttribute("x2")-5+x, +elLine.getAttribute("y2")-5+y, 10, 10, refsTo];
+
+                    for (let k in elementosInteracao) {
+                        if (!valores.includes(k)){
+                            newDiv = document.createElement("div");
+                            newDiv.style.left = elementosInteracao[k][0] + "px";
+                            newDiv.style.top = elementosInteracao[k][1] + "px";
+                            newDiv.style.width = elementosInteracao[k][2] + "px";
+                            newDiv.style.height = elementosInteracao[k][3] + "px";
+                            newDiv.setAttribute("class", "elemento elementoEdicao elementoEdicaoLinha");
+                            newDiv.setAttribute("idd", k);
+                            newDiv.setAttribute("refsTo", k + ", " + elementosInteracao[k][4]);
+                            newDiv.setAttribute("selecionado", false);
+                            newDiv.setAttribute("iddElPai", el.getAttribute("idd"));
+                            newDiv.style.borderRadius = "100%";
+                            if (contexto == document){
+                                document.body.appendChild(newDiv);
+                            }else{
+                                contexto.appendChild(newDiv);
+                            }
+                        }
+                    }
+                });
+
+                //Array.prototype.forEach.call(document.querySelectorAll(".elementoEdicaoLinha"), function(elLine) {
+                    //console.log(elLine);
+                //});
+                
+
+            }else if (el.classList.contains('tabela')){
+
+            }else if (el.classList.contains('elemento')){
+                const elements = Array.from(document.querySelectorAll('.elementoEdicaoRetangulo'));
+
+                /*if (qtdElementosSelecionados > 0){
+                    x = areaTotalElementosSelecionados[0];
+                    y = areaTotalElementosSelecionados[1];
+                    lar = areaTotalElementosSelecionados[2];
+                    alt = areaTotalElementosSelecionados[3];
+                    idd = "selecionados";
+                }*/
+
+                parent = contexto;
+                if (contexto == document){
+                    parent = document.body;
+                }
+
+                if (ferramenta == 'linha'){
+                    elementosInteracao[idd+'_centro'] = [lar/2-5+x, alt/2-5+y, 10, 10, ""];
+                }else{
+                    //elementosInteracao[idd+'_topleft'] =         [el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x-5, el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y-5      , 10, 10, Math.floor(el.getBoundingClientRect().width+el.getBoundingClientRect().left-parent.getBoundingClientRect().x).toString() + "," + Math.floor(el.getBoundingClientRect().height+el.getBoundingClientRect().top-parent.getBoundingClientRect().y).toString()];
+                    elementosInteracao[idd+'_topleft'] =         [el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x-5, el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y-5      , 10, 10, Math.floor(+el.style.width.replace("px", "") + +el.style.left.replace("px", "")) + "," + Math.floor(+el.style.height.replace("px", "") + +el.style.top.replace("px", ""))];
+                    elementosInteracao[idd+'_left'] =            [el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x-5, alt/2-5+el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y, 10, 10, Math.floor(+el.style.width.replace("px", "") + +el.style.left.replace("px", "")) + "," + Math.floor(+el.style.height.replace("px", "") + +el.style.top.replace("px", ""))];
+                    elementosInteracao[idd+'_bottomleft'] =      [el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x-5, alt-5+el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y  , 10, 10, Math.floor(+el.style.width.replace("px", "") + +el.style.left.replace("px", "")) + ',' + el.style.top.replace("px", "")];
+                    elementosInteracao[idd+'_bottom'] =    [lar/2-5+el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x, alt-5+el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y  , 10, 10, Math.floor(+el.style.width.replace("px", "") + +el.style.left.replace("px", "")) + ',' + el.style.top.replace("px", "")];
+                    elementosInteracao[idd+'_bottomright'] = [lar-5+el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x, alt-5+el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y  , 10, 10, Math.floor(+el.style.left.replace("px", "")) + "," + el.style.top.replace("px", "")];
+                    elementosInteracao[idd+'_right'] =       [lar-5+el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x, alt/2-5+el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y, 10, 10, Math.floor(+el.style.left.replace("px", ""))  + "," + el.style.top.replace("px", "")];
+                    elementosInteracao[idd+'_topright'] =    [lar-5+el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x, el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y-5      , 10, 10, Math.floor(+el.style.left.replace("px", "")) + ',' + Math.floor(+el.style.height.replace("px", "") + +el.style.top.replace("px", ""))];
+                    elementosInteracao[idd+'_top'] =       [lar/2-5+el.getBoundingClientRect().x-el.parentElement.getBoundingClientRect().x, el.getBoundingClientRect().y-el.parentElement.getBoundingClientRect().y-5      , 10, 10, Math.floor(+el.style.top.replace("px", "")) + ',' + Math.floor(+el.style.height.replace("px", "") + +el.style.top.replace("px", ""))];
+                }
+                
+
+                var valores = ""    
+                if (elements.length > 0){
+                    valores = elements.map(element => element.getAttribute('idd'));
+                    valores = valores.join('')
+                }
+
+                for (let k in elementosInteracao) {
+                    if (!valores.includes(k)){
+                        newDiv = document.createElement("div");
+                        newDiv.style.left = elementosInteracao[k][0] + "px";
+                        newDiv.style.top = elementosInteracao[k][1] + "px";
+                        newDiv.style.width = elementosInteracao[k][2] + "px";
+                        newDiv.style.height = elementosInteracao[k][3] + "px";
+                        newDiv.setAttribute("class", "elemento elementoEdicao elementoEdicaoRetangulo");
+                        newDiv.setAttribute("selecionado", false);
+                        newDiv.setAttribute("idd", k);
+                        newDiv.setAttribute("posicoes", elementosInteracao[k][4]);
+                        newDiv.setAttribute("iddElPai", idd);
+                        newDiv.style.zIndex = 2;
+                        //newDiv.innerHTML = '<img src="ionicons/expandir-bottom-right-outline.svg" class="svg-sm">'
+                        /*if (contexto == document){
+                            document.body.appendChild(newDiv);
+                        }else{
+                            contexto.appendChild(newDiv);
+                        }
+                        */
+                        el.insertAdjacentElement("afterend", newDiv)
+                    }
+                }
+            }
+
+            if (el.getAttribute("evento") !=  null){
+                newDiv = `<button class="elemento elementoEdicao elementoExpansao" onclick="retrairExpandirElementosSelecionados('${idd}')" iddElPai="${idd}" style="position: absolute; width: 15px; height: 15px; top: ${y}px; left: ${x-20}px">></button>`;
+                el.insertAdjacentHTML("afterend", newDiv)
+            }
+        }
+
+        function limparAreaEdicaoRedminElemento(el, removerSelecionados=false){
+            elements = document.getElementsByClassName("elementoEdicao");
+            for (var c=elements.length-1; c>=0; c--){
+                if ((elements[c].getAttribute("selecionado") === 'false' || removerSelecionados) && elements[c].getAttribute("iddElPai") == el.getAttribute("idd")){
+                    elements[c].remove();
+                }
+            }
+            el.setAttribute("mouseDentro", false);
+        }
+
+        function limparTodasAreaEdicaoRedminElemento(){
+            elementos = [];
+            elementosEdicao = document.querySelectorAll(".elementoEdicao");
+            elementosEdicao.forEach(function(el){
+                if (!elementos.includes(el.getAttribute("iddElPai"))){
+                    elementos.push(el.getAttribute("iddElPai"))
+                }
+                el.remove()
+            });
+            //Aqui tambem tem que fzaer quando foi edicaolinha e estiver selecionado, devo pegar as referencisa e limpara o selecionado das linhas
+
+            //tem que ver aqui depois pq esta dando null quando estou em uma janel desk secundaria e tendo movimentar um elemento
+            elementos.forEach(id => document.querySelector('[idd="' + id + '"]').setAttribute("mouseDentro", false));
+            //elementosEdicao.forEach(function(id){
+                //el = document.querySelector('[idd="' + id + '"]');
+                //console.log(el)
+            //});
+        }
+
+        function mostrarEsconderAreasRediminElemento(evt){
+            var distanciaMinima = 20;
+            if (segurandoBotaoEsquerdoMouse != -1 && segurandoBotaoEsquerdoMouse.classList.contains("elementoEdicaoRetangulo")){
+                if (segurandoBotaoEsquerdoMouse.getAttribute("iddElPai") == "selecionados"){
+                    //area para redmemerencionar quando houver itens selecionados
+                }else{
+                    var el = document.querySelector('[idd="'+segurandoBotaoEsquerdoMouse.getAttribute("iddElPai")+'"]');
+
+                    var posicoes = segurandoBotaoEsquerdoMouse.getAttribute("posicoes").split(",");
+                    if (posicoes.length > 1){
+                        var direcao = segurandoBotaoEsquerdoMouse.getAttribute("idd").split('_')[1].trim();
+                        var aa = [posicoes[0], posicoes[1], mxx(el, evt.clientX), myy(el, evt.clientY)];
+                        if (direcao == 'left' || direcao == "right"){
+                            aa = [posicoes[0], posicoes[1], mxx(el, evt.clientX), NaN];
+                        }else if (direcao == "bottom" || direcao == "top"){
+                            aa = [posicoes[0], posicoes[1], NaN, myy(el, evt.clientY)];
+                        }
+                        area = retornarAreaSelecao(aa[0], aa[1], aa[2], aa[3]);
+                        var antigoLar = +el.style.width.replace("px", "");
+                        var antigoAlt = +el.style.height.replace("px", "");
+                        if (segurandoCtrl){
+                            deselecionarElemento(el);
+                            if (direcao == "bottomright"){
+                                if (area[2] < area[3]){
+                                    el.style.width = area[2] + 'px';
+                                    el.style.height = area[2] + 'px';
+                                }else{
+                                    el.style.width = area[3] + 'px';
+                                    el.style.height = area[3] + 'px';
+                                }
+                            }else if (direcao == "bottomleft"){
+                                el.style.left = area[0] + 'px';
+                                el.style.width = area[2] + 'px';
+                                if (area[2] < area[0]){
+                                    el.style.height = area[2] + 'px';
+                                }else{
+                                    el.style.height = area[0] + 'px';
+                                }
+                            }else if (direcao == "topright"){
+
+                            }else if (direcao == "topleft"){
+
+                            }
+                        }else{
+                            el.style.left = area[0] + 'px';
+                            el.style.top = area[1] + 'px';
+                            el.style.width = area[2] + 'px';
+                            el.style.height = area[3] + 'px';
+                        }
+                        if (acoes.proporcaoExpancao){
+                            ajustarElementosInternosAoRedimin(el, antigoLar, antigoAlt);
+                        }
+                    }
+                }
+            }else if (segurandoBotaoEsquerdoMouse == -1){
+                //mostrar area de redmim para o item mais proximo
+                Array.prototype.forEach.call(contexto.querySelectorAll(".elemento"), function(el) {
+                    if (!el.classList.contains("elementoEdicao")){
+                        elementosCriados = (evt.clientX+distanciaMinima > el.getBoundingClientRect().left && evt.clientY+distanciaMinima > el.getBoundingClientRect().top && evt.clientX-distanciaMinima < el.getBoundingClientRect().width + el.getBoundingClientRect().left && evt.clientY-distanciaMinima < el.getBoundingClientRect().height + el.getBoundingClientRect().top);
+                        if (elementosCriados.toString() != el.getAttribute("mouseDentro")){
+                            if (elementosCriados){
+                                limparAreaEdicaoRedminElemento(el);
+                                mostrarAreaRedminEdicaoElemento(el);
+                            }else{
+                                limparAreaEdicaoRedminElemento(el);
+                            }
+                            el.setAttribute("mouseDentro", elementosCriados);
+                        }
+                    }
+                });
+            }
+        }
+
+        function atualizarMouseOffset(mousex, mousey){
+            Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
+                //aa = el.getBoundingClientRect().x - +el.style.left.replace("px", "");
+                //if (aa < 0)
+                //{aa = aa*-1; console.log('ee')}
+                //bb = el.getBoundingClientRect().y - +el.style.top.replace("px", "");
+                //if (bb < 0) bb = bb*-1
+                //if (aa == NaN){ aa = 0}
+                //if (bb == NaN){ bb = 0}
+
+                if (el.getAttribute('idd') == 'asd' || el.getAttribute('idd') == '2355443'){
+                    //console.log('we', +el.style.left.replace("px", "") - (mousex - mxx(el)), +el.style.left.replace("px", ""), mousex, mxx(el))
+                }
+                //As duas linha abaixo sao as que por enquanto melhor funcionam
+                el.setAttribute("offset_x", Math.floor(+el.style.left.replace("px", "") - mxx(el, mousex) )); //isso aqui: - (el.getBoundingClientRect().x - el.offsetLeft) anula quando um elemento esta rotacionado, ja que offsetLeft é o x original e getboun... é o x rotacionado -> foi alterado para +el.style.left.replace("px", "")) pois offsetLeft nao tem nos elementos svg
+                el.setAttribute("offset_y", Math.floor(+el.style.top.replace("px", "") - myy(el, mousey) ));
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll("line"), function(el){
+                el.setAttribute("offset_x1", +el.getAttribute("x1"));
+                el.setAttribute("offset_y1", +el.getAttribute("y1"));
+                el.setAttribute("offset_x2", +el.getAttribute("x2"));
+                el.setAttribute("offset_y2", +el.getAttribute("y2"));
+            });
+        }
+
+        function copiarElementosSelecionados(){
+            elementosCopiados = [];
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                elementosCopiados.push(el);
+            });
+        }
+
+        function colarElementosSelecionados(){
+            var contador = 0;
+
+            elementosCopiados.forEach(function(el){
+                el.setAttribute("selecionado", false);
+                elCopia = el.cloneNode(true);
+                elCopia.setAttribute("idd", 'n'+contador+Date.now());
+                elCopia.removeAttribute("refsto");
+                elCopia.removeAttribute("refsfrom");
+                elCopia.setAttribute("selecionado", true);
+                elCopia.style.left = mxx(el, mousex) + +el.getAttribute("offset_x") + "px";
+                elCopia.style.top = myy(el, mousey) + +el.getAttribute("offset_y")+ "px";
+                if (contexto == document){
+                    document.body.appendChild(elCopia);
+                }else{
+                    contexto.appendChild(elCopia);
+                }
+                contador++;
+            });
+        }
+
+        function recortarElementosSelecionados(){
+            elementosCopiados = [];
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                elementosCopiados.push(el.cloneNode(true));
+                el.remove();
+            });
+        }
+
+        function duplicarElementosSelecionados(){
+            var contador = 0;
+
+            elementosCopiados.forEach(function(el){
+                el.setAttribute("selecionado", false);
+                elCopia = el.cloneNode(true);
+                elCopia.setAttribute("idd", 'n'+contador+Date.now());
+                elCopia.removeAttribute("refsto");
+                elCopia.removeAttribute("refsfrom");
+                elCopia.setAttribute("selecionado", true);
+                if (contexto == document){
+                    document.body.appendChild(elCopia);
+                }else{
+                    contexto.appendChild(elCopia);
+                }
+                contador++;
+            });
+        }
+
+        function executarBufferCrtlZ(){
+
+        }
+
+        function atualizarAreaTotalElementosSelecionadosAdicionar(l, t, w, h){
+            if (areaTotalElementosSelecionados[0] == 0){
+                areaTotalElementosSelecionados[0] = Math.floor(t);
+            }else{
+                if (t < areaTotalElementosSelecionados[0]){
+                    areaTotalElementosSelecionados[0] = Math.floor(t);
+                }
+            }
+            if (areaTotalElementosSelecionados[1] == 0){
+                areaTotalElementosSelecionados[1] = Math.floor(l);
+            }else{
+                if (l < areaTotalElementosSelecionados[1]){
+                    areaTotalElementosSelecionados[1] = Math.floor(l);
+                }
+            }
+            if (areaTotalElementosSelecionados[2] == 0){
+                areaTotalElementosSelecionados[2] = Math.floor(w);
+            }else{
+                if (t+w > areaTotalElementosSelecionados[2]){
+                    areaTotalElementosSelecionados[2] = Math.floor(w);
+                }
+            }
+            if (areaTotalElementosSelecionados[3] == 0){
+                areaTotalElementosSelecionados[3] = Math.floor(h);
+            }else{
+                if (l+h > areaTotalElementosSelecionados[3]){
+                    areaTotalElementosSelecionados[3] = Math.floor(h);
+                }
+            }
+        }
+
+        function atualizarAreaTotalElementosSelecionadosRemover(l, t, w, h){
+            if (qtdElementosSelecionados == 0){
+                areaTotalElementosSelecionados = [0, 0, 0, 0];
+            }else{
+                if (areaTotalElementosSelecionados[0] == 0){
+                    areaTotalElementosSelecionados[0] = Math.floor(t);
+                }else{
+                    if (t > areaTotalElementosSelecionados[0]){
+                        areaTotalElementosSelecionados[0] = Math.floor(t);
+                    }
+                }
+                if (areaTotalElementosSelecionados[1] == 0){
+                    areaTotalElementosSelecionados[1] = Math.floor(l);
+                }else{
+                    if (l > areaTotalElementosSelecionados[1]){
+                        areaTotalElementosSelecionados[1] = Math.floor(l);
+                    }
+                }
+                if (areaTotalElementosSelecionados[2] == 0){
+                    areaTotalElementosSelecionados[2] = Math.floor(w);
+                }else{
+                    if (t+w < areaTotalElementosSelecionados[2]){
+                        areaTotalElementosSelecionados[2] = Math.floor(w);
+                    }
+                }
+                if (areaTotalElementosSelecionados[3] == 0){
+                    areaTotalElementosSelecionados[3] = Math.floor(h);
+                }else{
+                    if (l+h < areaTotalElementosSelecionados[3]){
+                        areaTotalElementosSelecionados[3] = Math.floor(h);
+                    }
+                }
+            }
+        }
+
+        function atualizarAreaElementosSelecionados(){
+            qtdElementosSelecionados = document.querySelectorAll('[selecionado="true"]').length;
+
+            if (qtdElementosSelecionados > 0){
+                desocultarBotaoAcao("apagarElementos");
+            }else{
+                ocultarBotaoAcao("apagarElementos");
+            }
+            /*console.log(areaTotalElementosSelecionados)
+            elementoSelecionados.style.top = areaTotalElementosSelecionados[0] + "px";
+            elementoSelecionados.style.left = areaTotalElementosSelecionados[1] + "px";
+            elementoSelecionados.style.width = areaTotalElementosSelecionados[2] + "px";
+            elementoSelecionados.style.height = areaTotalElementosSelecionados[3] + "px";*/
+        }
+
+        /*function desclecionarEvento(el){
+            var elementosPai = document.querySelectorAll('[evento="' + el.getAttribute("eventopert") + '"]')
+            if (elementosPai.length > 0){
+                Array.prototype.forEach.call(elementosPai, function(elp){
+                    elp.setAttribute("selecionado", false);
+                    desclecionarEvento(elp);
+                });
+            }else{
+                return;
+            }
+        }
+
+        function selecionarEvento(el){
+            var evento = el.getAttribute("evento")
+            if (evento == null){ evento = ''}
+            if (evento.trim() == ""){
+                return;
+            }else{
+                Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + evento + '"]'), function(eln){
+                    eln.setAttribute("selecionado", true);
+                    selecionarEvento(eln);
+                });
+            }
+        }
+
+        function selecionarGrupo(el){
+            Array.prototype.forEach.call(document.querySelectorAll('[grupo="' + el.getAttribute("grupo") + '"]'), function(elg){
+                elg.setAttribute("selecionado", true);
+                var evento = elg.getAttribute("evento")
+                if (evento == null){ evento = ''}
+                console.log(evento)
+                if (!evento.trim() == ""){
+                    selecionarEvento(elg)
+                }
+            });
+        }*/
+
+        function movimentarParaProximaCelulaTabela(mov="baixo"){
+            // mov: baixo, esquerda, direita, cima
+            document.querySelectorAll('.tabela[selecionado="true"]').forEach(function(tabela){
+                ultimo = tabela.getAttribute("ordem");
+                if (ultimo != null){
+                    ultimo = ultimo.trim().split(" ");
+                    if (ultimo.length > 0){
+                        ultimo = ultimo[ultimo.length-1].split(",");
+                        ultimo[0] = +ultimo[0];
+                        ultimo[1] = +ultimo[1];
+                        
+                        qtdLin = tabela.rows.length;
+                        qtdCol = tabela.rows[0].cells.length;
+
+                        if(mov == "baixo"){
+                            if(ultimo[0] < qtdLin - 1){
+                                if (!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela)
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]+1].cells[ultimo[1]]);
+                            }
+                            else if (segurandoCtrl){
+                                celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
+                                editarTabela("addAbaixo");
+                                if (!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela)
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]+1].cells[ultimo[1]]);
+                            }
+
+                        }else if(mov == "cima"){
+                            if(ultimo[0] > 0){
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela)
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]-1].cells[ultimo[1]]);
+                            }
+                            else if (segurandoCtrl){
+                                celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
+                                editarTabela("addAcima");
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela)
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]]);
+                            }
+
+                        }else if(mov == "direita"){
+                            if(ultimo[1] < qtdCol - 1){
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela);
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]+1]);
+                            }
+                            else if (segurandoCtrl){
+                                celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
+                                editarTabela("addDireita");
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela);
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]+1]);
+                            }
+
+                        }else if(mov == "esquerda"){
+                            if(ultimo[1] > 0){
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela);
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]-1]);
+                            }
+                            else if (segurandoCtrl){
+                                celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
+                                editarTabela("addEsquerda");
+                                if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
+                                    descelecionarTodasCelulasTabela(tabela);
+                                }
+                                selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]]);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function selecionarCelulaTabela(el){
+            el.closest(".tabela").setAttribute("selecionado", true);
+            el.setAttribute("tdselecionado", true);
+
+            var pos = el.parentNode.rowIndex + "," + el.cellIndex + " ";
+            var ordem = el.closest(".tabela").getAttribute("ordem");
+            if (ordem == null){
+                ordem = pos;
+            }else if(!ordem.includes(pos)){
+                ordem = ordem + pos;
+            }
+            el.closest(".tabela").setAttribute("ordem", ordem);
+        }
+
+        function descelecionarCelulaTabela(el){
+            el.setAttribute("tdselecionado", false);
+
+            var pos = el.parentNode.rowIndex + "," + el.cellIndex + " ";
+            var ordem = el.closest(".tabela").getAttribute("ordem");
+            if (ordem == null){ordem = "";}
+            if (ordem.includes(pos)){
+                ordem = ordem.replace(pos, "");
+            }
+            el.closest(".tabela").setAttribute("ordem", ordem);
+        }
+
+        function descelecionarTodasCelulasTabela(tabela){
+            tabela.querySelectorAll('td[tdselecionado="true"]').forEach(function(td){
+                descelecionarCelulaTabela(td);
+            });
+        }
+
+        function selecionarLinhas(el){
+            retornarIdElementosReferenciados(el.getAttribute("refsTo")).forEach(function(r){
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
+            })
+
+            retornarIdElementosReferenciados(el.getAttribute("refsFrom")).forEach(function(r){
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
+            })
+        }
+
+        function controleOrdemElementosSelecionar(el){
+            if (!ordemElementosSelecionados.includes(el.getAttribute("idd")) && !el.closest("elementoEdicao")){
+                ordemElementosSelecionados.push(el.getAttribute("idd"));
+            }
+        }
+
+        function controleOrdemElementosDescelecionar(id){
+            var strOrdem = ordemElementosSelecionados.join(",");
+
+            if (strOrdem.trim() != ""){
+                if (strOrdem.includes(","+id)){
+                    strOrdem = strOrdem.replace(","+id, "");
+                    ordemElementosSelecionados = strOrdem.split(",");
+                }else if (strOrdem.includes(id+",")){
+                    strOrdem = strOrdem.replace(id+",", "");
+                    ordemElementosSelecionados = strOrdem.split(",");
+                }else{
+                    ordemElementosSelecionados = [];
+                }
+            }
+        }
+        
+        function selecionarElemento(el){
+            el.setAttribute("selecionado", true);
+            controleOrdemElementosSelecionar(el);
+
+            //atualizarAreaTotalElementosSelecionadosAdicionar(el.getBoundingClientRect().left, el.getBoundingClientRect().top, el.getBoundingClientRect().width, el.getBoundingClientRect().height);
+            atualizarAreaElementosSelecionados();
+
+            //selecionarEvento(el);
+            //desclecionarEvento(el)
+
+            //selecionarGrupo(el);
+
+            selecionarLinhas(el);
+
+            atribuirDesatribuirValoresEditorElementos(el);
+        }
+
+        function deselecionarElemento(el){
+            el.setAttribute("selecionado", false);
+            controleOrdemElementosDescelecionar(el.getAttribute("idd"));
+
+            //atualizarAreaTotalElementosSelecionadosRemover(el.getBoundingClientRect().left, el.getBoundingClientRect().top, el.getBoundingClientRect().width, el.getBoundingClientRect().height);
+            atualizarAreaElementosSelecionados();
+            
+            retornarIdElementosReferenciados(el.getAttribute("refsTo")).forEach(function(r){
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionadoxy1", false);
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionadoxy2", false);
+            })
+
+            retornarIdElementosReferenciados(el.getAttribute("refsFrom")).forEach(function(r){
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionadoxy1", false);
+                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionadoxy2", false);
+            })
+
+            atribuirDesatribuirValoresEditorElementos(el);
+        }
+
+        function retornarIdElementosReferenciados(refs){
+            listaIds = [];
+            if (refs != '' && refs != null){
+                var rfs = refs.split(',');
+                for(var r =0; r < rfs.length; r++){
+                    if (rfs[r].trim() != ''){
+                        listaAux = [];
+                        var rf = rfs[r].split('_');
+                        for (var rr=0; rr < rf.length; rr++){
+                            listaAux.push(rf[rr].trim());
+                        }
+                        listaIds.push(listaAux);
+                    }
+                }
+            }
+            return listaIds;
+        }
+
+        function selecionarTodosElementos(){
+            Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
+                selecionarElemento(el);
+            });
+        }
+
+        function descelecionarTodosElementos(){
+            Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
+                deselecionarElemento(el);
+            });
+        }
+
+        function selecionarDescelecionarTodoElementos(){
+            var totalEl = document.getElementsByClassName("elemento");
+            var elTrue = document.querySelectorAll('[selecionado="true"]');
+            if ((elTrue.length > 0 && elTrue.length != totalEl.length) || elTrue.length == 0){
+                selecionarTodosElementos();
+            }else{
+                descelecionarTodosElementos();
+            }
+        }
+
+        function limparReferenciasElemento(el, tipoRef, idElemento){
+            //tipoRef: refsto ou refsfrom
+            if (el.classList.contains("elementoEdicao")){
+                el.remove();
+            }else{
+                refs = el.getAttribute(tipoRef).split(',');
+                for (var c = refs.length-1; c >= 0; c--){
+                    if (refs[c].includes(idElemento)){ refs.splice(c); }
+                }
+                refs = refs.join(','); refs = refs.trim();
+                if (refs == ""){
+                    el.removeAttribute(tipoRef);
+                }else{
+                    el.setAttribute(tipoRef, refs);
+                }
+            }
+        }
+
+        function limparReferenciasElementos(idElemento){
+            Array.prototype.forEach.call(document.querySelectorAll('[refsto*="' + idElemento + '"]'), function(el){
+                limparReferenciasElemento(el, "refsto", idElemento)
+            });
+            Array.prototype.forEach.call(document.querySelectorAll('[refsfrom*="' + idElemento + '"]'), function(el){
+                limparReferenciasElemento(el, "refsfrom", idElemento)       
+            });
+        }
+
+        function apagarElementosSelecionados(){
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                limparReferenciasElementos(el.getAttribute("idd"));
+                el.remove();
+                if (el.closest(".tabela")){
+                    ocultarBotaoAcao("tabelaLinha");
+                }
+            });
+            descelecionarTodosElementos();
+        }
+
+        function controleGrupo(){
+            var grupos = [];
+            var removerElementosDoGrupo = true;
+
+            ordemElementosSelecionados.forEach(function(id){
+                el = document.querySelector('[idd="' + id + '"]');
+                var grupo = el.getAttribute('grupo')
+                if (grupo != null){
+                    if (!grupos.includes(grupo)){
+                        grupos.push(grupo);
+                    }
+                }else{
+                    removerElementosDoGrupo = false;
+                }
+            });
+
+            /*Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                var grupo = el.getAttribute('grupo')
+                if (grupo != null){
+                    if (!grupos.includes(grupo)){
+                        grupos.push(grupo);
+                    }
+                }else{
+                    removerElementosDoGrupo = false;
+                }
+            });*/
+
+            var nomeGrupo = 'g' + Date.now();
+            if (grupos.length > 0){
+                nomeGrupo = grupos[0];
+            }
+            if (grupos.length > 1){
+                removerElementosDoGrupo = false;
+            }
+
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                if (removerElementosDoGrupo && ordemElementosSelecionados.includes(el.getAttribute("idd"))){
+                    el.removeAttribute("grupo");
+                }else{
+                    el.setAttribute("grupo", nomeGrupo);
+                }
+            });
+        }
+
+        function controleEventoUnico(){
+            console.log('sss')
+            var nomeEvento = 'ev' + Date.now();
+            for (var c =0 ; c < ordemElementosSelecionados.length; c++){
+                el = document.querySelector('[idd="' + ordemElementosSelecionados[c] + '"]');
+                if (c == 0){
+                    console.log('ccc')
+                    if (el.getAttribute("evento") != null){
+                        nomeEvento = el.getAttribute("evento");
+                    }else{
+                        el.setAttribute("evento", nomeEvento);
+                    }
+                }else{
+                    el.setAttribute("eventopert", nomeEvento);
+                }
+            }            
+        }
+
+        function desprenderEventoUnico(){
+            ordemElementosSelecionados.forEach(function(id){
+                el = document.querySelector('[idd="' + id + '"]');
+                el.removeAttribute("eventopert");
+                if (el.getAttribute("evento") != null){
+                    Array.prototype.forEach.call(document.querySelectorAll('[eventopert="' + el.getAttribute("evento") + '"]'), function(elep){
+                        elep.removeAttribute("eventopert");
+                    });
+                    el.removeAttribute("evento");
+                }
+            });
+        }
+
+        function controleEventoMultiplo(){
+
+        }
+
+        function editarTexto(el){
+            //descelecionarTodosElementos();
+            el.setAttribute('contenteditable', true);
+            el.classList.add('editando');
+            el.focus();
+            //el.select();
+            alterarFerramenta("texto"); // Apenas para fins esteticos
+            ferramenta = "texto_editar";
+        }
+
+        function consolidarTexto(){
+            Array.prototype.forEach.call(document.querySelectorAll('.texto[contenteditable="true"]'), function(el){
+                el.setAttribute('contenteditable', false);
+                el.classList.remove('editando');
+            });
+            alterarFerramenta("selecao");
+        }
+
+        function abrirJanelaDetalhes(el){
+            if (!el.classList.contains("elementoEdicao")){
+                newDiv = document.createElement("div");
+                newDiv.setAttribute("class", "janelaDetalhes");
+                newDiv.setAttribute("idElemento", el.getAttribute("idd"));
+                newDivCabecalho = document.createElement("div");
+                newDivCorpo = document.createElement("div");
+                
+                newDivCabecalho.setAttribute("class", "cabecalhoJanelaDetalhes");
+                newDivCabecalho.innerHTML = `<p style="position:absolute;">${el.getAttribute("nome")}</p>
+                                            <button style="position:absolute; left: 180px; text-align:center; width: 20px; height: 20px;" onclick="maximizarMinimizarJanelaDetalhes()">+</button>
+                                            <button style=" position: absolute; left: 200px; text-align: center; width: 20px; height: 20px;" onclick="fecharJanelaDetalhes()">X</button>`
+
+                newDivCorpo.setAttribute("class", "corpoJanelaDetalhes")
+
+                detalhes = el.getAttribute("detalhes");
+                if (detalhes != null && detalhes != ''){
+                    newDivCorpo.innerHTML = detalhes;
+                }
+                newDiv.appendChild(newDivCabecalho);
+                newDiv.appendChild(newDivCorpo);
+                document.body.appendChild(newDiv);
+
+                contexto = newDivCorpo;
+            }
+        }
+
+        function fecharJanelaDetalhes(){
+            janelasAbertas = document.querySelectorAll(".janelaDetalhes");
+            if (janelasAbertas.length > 0){
+                ultimaJanelaAberta = janelasAbertas[janelasAbertas.length-1];
+                elemento = document.querySelector('[idd="' + ultimaJanelaAberta.getAttribute("idElemento") + '"]');
+                if (elemento != null){
+                    elemento.setAttribute("detalhes", ultimaJanelaAberta.querySelector(".corpoJanelaDetalhes").innerHTML.split('"').join("'"));
+                }
+                ultimaJanelaAberta.remove()
+                contexto = document;
+            }
+        }
+
+        function maximizarMinimizarJanelaDetalhes(){
+            janelasAbertas = document.querySelectorAll(".janelaDetalhes");
+            janelasAbertas[janelasAbertas.length-1].classList.toggle('maximizada');
+        }
+
+        function crirarLinhaEntreDoisElementos(evt, elSelecionado){
+            if (!evt.target.closest(".linha") && !elSelecionado.closest("linha")){
+
+                if (elSelecionado.classList.contains("elementoEdicaoLinha") && evt.target.classList.contains("elementoEdicaoLinha")){
+
+                    // Criar uma linha entre os dois nodos
+                    // Se forem dois elementos linha distintos, juntar os dois
+                    console.log("linha -> linha");
+
+                }else if (elSelecionado.classList.contains("elementoEdicaoLinha")){
+
+                    // Crirar a linha e as refernecias do nodo para o elemento
+                    console.log("linha -> elemento");
+
+                }else if (evt.target.classList.contains("elementoEdicaoLinha")){
+
+                    // Crirar a linha e as refernecias do elemento para o nodo
+                    console.log("elemento -> linha");
+
+                }else{
+                    // elemento -> elemento
+
+                    var refsTo = elSelecionado.getAttribute("refsTo");
+                    var refsFrom = elSelecionado.getAttribute("refsFrom");
+                    if (refsTo == null){
+                        refsTo = "";
+                    }
+                    if (refsFrom == null){
+                        refsFrom = "";
+                    }
+
+                    if (!refsTo.includes(evt.target.getAttribute("idd")) && !refsFrom.includes(evt.target.getAttribute("idd"))){
+                        var ee = criarElemento(evt, elSelecionado.getBoundingClientRect().left+(elSelecionado.getBoundingClientRect().width/2), elSelecionado.getBoundingClientRect().top + (elSelecionado.getBoundingClientRect().height/2), evt.target.getBoundingClientRect().left+(evt.target.getBoundingClientRect().width/2), evt.target.getBoundingClientRect().top + (evt.target.getBoundingClientRect().height/2));
+                        reajustarCaixaElementoLinha(ee);
+                        r = elSelecionado.getAttribute("refsTo")
+                        var idNovaLinha = ee.querySelector('line').getAttribute('idd');
+                        if (r == '' || r == null){
+                            elSelecionado.setAttribute("refsTo", idNovaLinha + "_xy1_" + evt.target.getAttribute("idd"))
+                        }else{
+                            if (!r.includes(idNovaLinha)){
+                                elSelecionado.setAttribute("refsTo", r + "," + idNovaLinha + "_xy1_" + evt.target.getAttribute("idd"))
+                            }
+                        }
+                        rfrom = evt.target.getAttribute("refsFrom");
+                        if (rfrom == '' || rfrom == null){
+                            evt.target.setAttribute("refsFrom", idNovaLinha + "_xy2_" + elSelecionado.getAttribute("idd"))
+                        }else{
+                            if (!rfrom.includes(idNovaLinha)){
+                                evt.target.setAttribute("refsFrom", rfrom + "," + idNovaLinha + "_xy2_" + elSelecionado.getAttribute("idd"))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function detectarCliqueEmLine(){
+            Array.prototype.forEach.call( {
+
+            });
+        }
+
+        function selecionarLinha(){
+            
+        }
+
+        function deselecionarLinha(){
+
+        }
+
+        function conectarLinhas(){
+            Array.prototype.forEach.call(document.querySelectorAll('.elementoEdicaoLinha[selecionado="true"]'), function(){
+
+            });
+        }
+
+        function desconectarLinhas(){
+            Array.prototype.forEach.call(document.querySelectorAll('.elementoEdicaoLinha[selecionado="true"]'), function(){
+
+            });
+        }
+
+        /*function dividirLinha(el, mx, my){
+            descelecionarTodosElementos();
+            var parent = el.parentElement;
+            var px = parent.style.left.replace("px", "");
+            var py = parent.style.top.replace("px", "");
+
+            var x1 = +el.getAttribute("x1");
+            var y1 = +el.getAttribute("y1");
+            var x2 = +el.getAttribute("x2");
+            var y2 = +el.getAttribute("y2");
+
+            novoIdd = Date.now();
+            novoX1 = Math.floor(mx-px);
+            novoY1 = Math.floor(my-py);
+
+            refsTo = el.getAttribute("refsto");
+            el.setAttribute("refsto", "l" + novoIdd.toString() + "_xy1");
+
+            Array.prototype.forEach.call(document.querySelectorAll('[refsfrom*="' + el.getAttribute("idd") + '"]'), function(elr){
+                if (!elr.classList.contains("elementoEdicao")){
+                    refs = elr.getAttribute("refsfrom")
+                    if (refs == null){
+                        elr.setAttribute("refsfrom", "l" + novoIdd.toString() + "_xy2")
+                    }else{
+                        elr.setAttribute("refsfrom", refs + ", l" + novoIdd.toString() + "_xy2")
+                    }
+                    limparReferenciasElemento(elr, "refsfrom", el.getAttribute("idd"))
+                }
+            });
+
+            el.setAttribute("x2", +novoX1);
+            el.setAttribute("y2", +novoY1);
+            var s = "<line idd='l" + novoIdd + "' x1='" + novoX1 + "' y1='" + novoY1 + "' x2='" + Math.floor(x2) + "' y2='" + Math.floor(y2) + "' refsfrom='" + el.getAttribute("idd") + "_xy2' refsto='" + refsTo + "' style='stroke: black; stroke-width: 5;'></line>"
+            if (refsTo == null){
+                var s = "<line idd='l" + novoIdd + "' x1='" + novoX1 + "' y1='" + novoY1 + "' x2='" + Math.floor(x2) + "' y2='" + Math.floor(y2) + "' refsfrom='" + el.getAttribute("idd") + "_xy2' style='stroke: black; stroke-width: 5;'></line>"
+            }
+            el.parentElement.innerHTML = el.parentElement.innerHTML + s;
+            limparAreaEdicaoRedminElemento(parent);
+            mostrarAreaRedminEdicaoElemento(parent);
+        }*/
+
+        function dividirLinha(el){
+            descelecionarTodosElementos();
+            var parent = el.parentElement;
+            var px = parent.style.left.replace("px", "");
+            var py = parent.style.top.replace("px", "");
+
+            var x1 = +el.getAttribute("x1");
+            var y1 = +el.getAttribute("y1");
+            var x2 = +el.getAttribute("x2");
+            var y2 = +el.getAttribute("y2");
+
+            var novoIdd = "l" + Date.now();
+            var refsTo = el.getAttribute("refsto");
+            var refsFrom = el.getAttribute("refsfrom");
+
+            novoX1 = Math.floor(mxx(el, mx)-px);
+            novoY1 = Math.floor(myy(el, my)-py);
+            novoRefsTo = refsTo;
+            novoRefsFrom = el.getAttribute("idd") + "_xy2";
+
+            el.setAttribute("refsto", novoIdd.toString() + "_xy1");
+
+
+            //Array.prototype.forEach.call(document.querySelectorAll('[refsto*="' + el.getAttribute("idd") + '"]'), function(elr){
+                //console.log(elr)
+            //});
+
+            Array.prototype.forEach.call(document.querySelectorAll('[refsfrom*="' + el.getAttribute("idd") + '"]'), function(elr){
+                if (!elr.classList.contains("elementoEdicao")){
+                    refs = elr.getAttribute("refsfrom")
+                    if (refs == null){
+                        elr.setAttribute("refsfrom", "l" + novoIdd.toString() + "_xy2")
+                    }else{
+                        elr.setAttribute("refsfrom", refs + ", l" + novoIdd.toString() + "_xy2")
+                    }
+                    limparReferenciasElemento(elr, "refsfrom", el.getAttribute("idd"))
+                }
+            });
+
+
+            el.setAttribute("x2", +novoX1);
+            el.setAttribute("y2", +novoY1);
+
+            var novaLinha = `<line idd="${novoIdd}"
+                            x1="${novoX1}" y1="${novoY1}"
+                            x2="${Math.floor(x2)}" y2="${Math.floor(y2)}"
+                            style="stroke: black; stroke-width: 5;" `
+            if (novoRefsTo != null){ novaLinha = novaLinha + `refsto="${novoRefsTo}"`; }
+            if (novoRefsFrom != null){ novaLinha = novaLinha + `refsfrom="${novoRefsFrom}"`; }
+            novaLinha = novaLinha + `></line>`;
+
+            el.insertAdjacentHTML("afterend", novaLinha);
+
+            limparAreaEdicaoRedminElemento(parent);
+            mostrarAreaRedminEdicaoElemento(parent);
+        }
+
+        function atualizarRefsTo(idLinha, refsTo){
+            if (refsTo != null){
+                Array.prototype.forEach.call(document.querySelectorAll('[refsto*="' + idLinha + '"]'), function(el){
+                    if (!el.classList.contains("elementoEdicao")){
+                        refsElAtual = el.getAttribute("refsto");
+                        console.log(refsElAtual)
+                        if (refsElAtual == null){
+                            el.setAttribute("refsto", refsTo);
+                        }else{
+                            refsTo.split(",").forEach(function(idref){
+                                if(!refsElAtual.includes(idref)){
+                                    refsElAtual = refsElAtual + ", " + idref;
+                                }
+                            });
+                            el.setAttribute("refsto", refsElAtual);
+                        }
+                        console.log('aa', refsTo)
+                    }
+                });
+            }
+        }
+
+        function atualizarRefsToElementosExternos(elApagar){
+            console.log(elApagar)
+            idLinha = elApagar.getAttribute("idd")
+            refsTo = elApagar.getAttribute("refsto");
+            if (refsTo == null) { refsTo = ""; }
+            console.log('id:  ', idLinha);
+            console.log('rto: ', refsTo);
+
+            Array.prototype.forEach.call(document.querySelectorAll('[refsto*="' + idLinha + '"]'), function(el){
+                if (!el.classList.contains("elementoEdicao")){
+                    if (!el.classList.contains("line")){
+
+                    }else{
+
+                    }
+                }
+            });
+        }
+
+        function juntarLinhas(evt){
+            descelecionarTodosElementos();
+            refsElEdicao = evt.getAttribute("refsto").split(",").map(s => s.trim()).filter(s => s !== "");
+
+            idLinha = evt.getAttribute("idd").split('_')[0].trim();
+            if (refsElEdicao.length > 1 && refsElEdicao.includes(idLinha+"_xy1")){
+                idLinha = refsElEdicao[1].split("_")[0].trim();
+            }
+            elApagar = document.querySelector('[idd="' + idLinha + '"]');
+            elParent = elApagar.parentElement
+
+            refsTo = elApagar.getAttribute("refsto");
+            refsFrom = elApagar.getAttribute("refsfrom");
+
+
+            console.log(idLinha);
+            //console.log(refsElEdicao)
+            //console.log(refsTo);
+            //console.log(refsFrom)
+
+            atualizarRefsTo(elApagar);
+
+            if (refsTo == null || refsFrom == null){ //ou configuracao marcada para apagar e nao herdar referencias
+                atualizarRefsTo(idLinha, refsTo);
+                if (refsTo != null){
+                    if (refsElEdicao.length > 1){
+                        refsTo.replace("_xy1", "").replace("_xy2", "").split(",").map(s => s.trim()).filter(s => s !== "").forEach(function(r){
+                            e = document.querySelector('[idd="' + r + '"]');
+                            e.setAttribute("x1", elApagar.getAttribute("x1"));
+                            e.setAttribute("y1", elApagar.getAttribute("y1"));
+                        });
+                    }
+                }
+                limparReferenciasElementos(idLinha);
+                elApagar.remove();
+                if (elParent.innerHTML.trim() == ""){
+                    limparReferenciasElementos(elParent.getAttribute("idd"));
+                    elParent.remove();
+                }
+            }else{                   
+                atualizarRefsTo(idLinha, refsTo);
+
+                if (refsFrom != null){
+                    idrf = refsFrom.split('_')[0].trim();
+                    elNovasPos = document.querySelector('[idd="' + idrf + '"]');
+
+                    Array.prototype.forEach.call(document.querySelectorAll('[refsfrom*="' + idLinha + '"]'), function(el){
+                        if (!el.classList.contains("elementoEdicao")){
+                            refsElAtual = el.getAttribute("refsfrom");
+                            if (refsElAtual == null){
+                                el.setAttribute("refsfrom", refsFrom);
+                            }else{
+                                refsFrom.split(",").forEach(function(idref){
+                                    if(!refsElAtual.includes(idref)){
+                                        refsElAtual = refsElAtual + ", " + idref;
+                                    }
+                                });
+                                el.setAttribute("refsfrom", refsElAtual);
+                            }
+                            el.setAttribute("x1", elNovasPos.getAttribute("x2"));
+                            el.setAttribute("y1", elNovasPos.getAttribute("y2"));
+                        }
+                    });
+                }
+
+                limparReferenciasElementos(idLinha);
+                elApagar.remove();
+            }
+            limparAreaEdicaoRedminElemento(elParent);
+            mostrarAreaRedminEdicaoElemento(elParent);
+        }
+
+        function conectarElementos(){
+
+        }
+
+        function desconectarElementos(){
+
+        }
+
+        document.onmousedown = function(evt){
+            if (evt.target.getAttribute('idd') == 'asd' || evt.target.getAttribute('idd') == '2355443'){
+                console.log(mxx(evt.target, evt.clientX))
+            }
+            //console.log(evt);
+            //console.log(evt.target)
+            janelaAtual = "desk";
+            if (evt.target.closest(".janela")){
+                janelaAtual = "editor";
+            }
+
+            if (janelaAtual == "desk"){
+                clickedPos = [evt.clientX, evt.clientY];
+                if (evt.button === 0){
+                    if (evt.target.closest(".tabela")){
+                        celulaTabelaClicada = evt.target.closest("td");
+                        desocultarBotaoAcao("tabelaLinha");
+                    }else{
+                        ocultarBotaoAcao("tabelaLinha")
+                    }
+                    if(evt.target.closest(".texto")){
+                        desocultarBotaoAcao("textoFormat");
+                    }else{
+                        ocultarBotaoAcao("textoFormat")
+                    }
+
+                    if (ferramenta == "selecao"){
+                        
+                        if (!segurandoShift && !segurandoCtrl){
+                            //if (evt.target.classList.contains("elementoEdicaoRetangulo")){
+                                //document.querySelector('[idd="' + evt.target.getAttribute('iddElPai') + '"]').setAttribute('selecionado', true);
+                            //}else{
+                                Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
+                                    if ((el !== evt.target && evt.target.getAttribute("selecionado") === 'false') || (!evt.target.classList.contains("elemento"))){
+                                        deselecionarElemento(el);
+                                    }
+                                });
+                            //}
+                        }
+
+                        elTarget = evt.target.closest(".elemento");
+                        if (elTarget != null && !evt.target.classList.contains("linha")){
+                            if (ferramenta != "texto_editar"){
+                                evt.preventDefault();
+                            }
+
+                            if (elTarget.getAttribute("selecionado") === 'true' && segurandoShift){
+                                if(!elTdTarget){
+                                    deselecionarElemento(elTarget);
+                                }
+                            }else{
+                                if (!segurandoCtrl){
+                                    selecionarElemento(elTarget);
+                                }else if (!mouseMovimentando && !evt.target.closest(".elementoEdicao")){
+                                    alterarFerramenta("linha");
+                                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                                        crirarLinhaEntreDoisElementos(evt, el);
+                                    });
+                                    alterarFerramenta("selecao");
+                                }
+                            }
+                            segurandoBotaoEsquerdoMouse = evt.target;
+                        }else {
+                            selecionarLinha();
+                        }
+                    }
+                    else if (ferramenta == "texto" && evt.target.closest(".texto")){
+                        editarTexto(evt.target.closest(".texto"));
+                    }
+                    else if (ferramenta == "texto_editar"){
+                        closestTexto = evt.target.closest(".texto");
+                        if (!closestTexto || (closestTexto && !closestTexto.classList.contains('editando'))){// && evt.target.getAttribute("contenteditable") !== "true"){
+                            consolidarTexto();
+                        }               
+                    }
+                    else if (ferramenta == "evento"){
+                        var ondeAtribuirNovoEvento = document.getElementById("ondeAtribuirNovoEvento");
+                        if (!evt.target.classList.contains("elemento")){
+                            ondeAtribuirNovoEvento.style.display = 'none';
+                        }else{
+                            descelecionarTodosElementos()
+                            selecionarElemento(evt.target);
+                            ondeAtribuirNovoEvento.style.display = 'block';
+                            ondeAtribuirNovoEvento.querySelectorAll('option')[1].selected = 'selected';
+                        }
+                        abrirFecharJanela("janelaCriarEvento");
+                    }
+                    else{
+                        if (ferramenta != "texto_editar"){
+                            segurandoBotaoEsquerdoMouse = criarElemento(evt);
+                        }
+                    }
+
+                    atualizarMouseOffset(evt.clientX, evt.clientY);
+                    if (segurandoBotaoEsquerdoMouse != -1 && !segurandoBotaoEsquerdoMouse.classList.contains("elementoEdicaoLinha")){
+                        segurandoBotaoEsquerdoMouse.setAttribute("mouseDentro", false);
+                        limparTodasAreaEdicaoRedminElemento();
+                    }
+                }else if (evt.button == 1){
+                    evt.preventDefault();
+                    if (evt.target.classList.contains("elemento")){
+                        clickedPos = [-1, -1];
+                        abrirJanelaDetalhes(evt.target);
+                    }
+                }else if (evt.button == 2){
+                    if (segurandoCtrl){
+                        elTarget = evt.target.closest(".elemento");
+                        if (elTarget.classList.contains('retangulo')){
+                            alterarFerramenta("retangulo");
+                        }else if (elTarget.classList.contains('linha')){
+                            alterarFerramenta("linha");
+                        }else if (elTarget.classList.contains('texto')){
+                            alterarFerramenta("texto");
+                        }else if (elTarget.classList.contains('tabela')){
+                            alterarFerramenta("tabela");
+                        }else if (elTarget.classList.contains('evento')){
+                            //alterarFerramenta("evento");
+                        }else{
+                            alterarFerramenta("selecao");
+                        }
+                    }else{
+
+                    }
+                }
+            }else if (janelaAtual == "editor"){
+                if (evt.target.closest('input')){
+                    atualizarValoresElementoApartirEditorElementosClick(evt.target.closest('input'));
+                }
+            }
+        }
+
+        document.onmouseup = function(evt){
+            if (janelaAtual == "desk"){
+                
+                if (mouseMovimentando){
+                    // se movimentar e tiver apenas um ou nenhum td selecionado, vai selecoinar o td alvo
+                    elTdTarget = evt.target.closest("td");
+                    if (elTdTarget != null){
+                        els = elTdTarget.closest(".tabela").querySelectorAll('td[tdselecionado="true"]')
+                        if(els.length <= 1){
+                            Array.prototype.forEach.call(els, function(td){
+                                descelecionarCelulaTabela(td);
+                            });
+                            selecionarCelulaTabela(elTdTarget);
+                        }
+                    }
+
+                }else if (!mouseMovimentando || segurandoShift){
+                    elTdTarget = evt.target.closest("td");
+                    if (elTdTarget != null){
+                        if (!segurandoShift){
+                            if (elTdTarget.closest(".tabela").getAttribute("selecionado") === "true"){
+                                Array.prototype.forEach.call(elTdTarget.closest(".tabela").querySelectorAll("td"), function(el) {
+                                    descelecionarCelulaTabela(el);
+                                });
+                            }
+                        }
+
+                        evt.preventDefault();
+                        if (elTdTarget.getAttribute("tdselecionado") === "true" && segurandoShift){
+                            descelecionarCelulaTabela(elTdTarget)
+                        }else{
+                            selecionarCelulaTabela(elTdTarget);
+                        }
+                    }
+                }
+
+                clickedPos = [-1, -1];
+                elementoSelecao.style.width = "0px";
+                elementoSelecao.style.height = "0px";
+                if (ferramenta != "selecao" && ferramenta != "texto_editar"){
+                    alterarFerramenta("selecao");
+                }
+
+                segurandoBotaoEsquerdoMouse = -1;
+
+                reajustarCaixaElementoReferenciados();
+
+                mouseMovimentando = false;
+            }
+        }
+
+        document.ondblclick = function(evt){
+            if (janelaAtual == "desk"){
+                if (evt.target.nodeName == 'line'){
+                    dividirLinha(evt.target, evt.clientX, evt.clientY);
+                }else if (evt.target.classList.contains('elementoEdicao')){
+                    juntarLinhas(evt.target);
+                }else{
+                    var target = evt.target.closest(".texto");
+                    if (target){
+                        if (target.getAttribute("contenteditable") !== 'true'){
+                            editarTexto(target);
+                        }
+                    }else{
+                        if (evt.target.closest(".elemento")){
+                            el = evt.target.querySelector(".texto");
+                            if (el != null){
+                                if (el.getAttribute("contenteditable") !== 'true'){
+                                    editarTexto(el);
+                                }
+                            }else{
+                                el = document.createElement("div");
+                                el.setAttribute("class", "texto");
+                                el.innerHTML = "Novo elemento";
+                                evt.target.appendChild(el);
+                                editarTexto(el);
+                            }
+                        }else{
+                            if (ferramenta != "texto_editar"){
+                                alterarFerramenta('texto');
+                                criarElemento(evt);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        document.onwheel = function(evt){
+            if (evt.deltaY < 0 && segurandoShift){
+                movimentarElementos("a", evt.clientX, evt.clientY);
+            } else if (evt.deltaY > 0 && segurandoShift){
+                movimentarElementos("d", evt.clientX, evt.clientY);
+            } else if (evt.deltaY > 0){
+                movimentarElementos('s', evt.clientX, evt.clientY);
+            }else{
+                movimentarElementos("w", evt.clientX, evt.clientY);
+            }
+        }
+
+        var mousex=0; mousey=0;
+        document.onmousemove = function(evt){
+            mousex = evt.clientX;
+            mousey = evt.clientY;
+
+            if (janelaAtual == "desk"){
+                if (segurandoBotaoEsquerdoMouse != -1){
+                    if (clickedPos[0] != -1 && clickedPos[1] != -1){
+                        if (evt.clientX > clickedPos[0] + 5 || evt.clientX < clickedPos[0] - 5 || evt.clientY > clickedPos[1] + 5 || evt.clientY < clickedPos[1] - 5){
+                            mouseMovimentando = true;
+                        }
+                    }else{
+                        mouseMovimentando = true;
+                    }
+                }
+
+                if (ferramenta != "texto_editar"){
+                    evt.preventDefault();
+                }
+
+                mostrarEsconderAreasRediminElemento(evt);
+
+                if (clickedPos[0] != -1 && clickedPos[1] != -1 && (segurandoBotaoEsquerdoMouse == -1 || segurandoShift) && ferramenta != "texto_editar"){
+                    var pos = retornarAreaSelecao(clickedPos[0], clickedPos[1], evt.clientX, evt.clientY);
+                    elementoSelecao.style.left = pos[0] + "px";
+                    elementoSelecao.style.top = pos[1] + "px";
+                    elementoSelecao.style.width = pos[2] + "px";
+                    elementoSelecao.style.height = pos[3] + "px";
+
+                    Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
+                        elementoEmAlvo = (el.getBoundingClientRect().left > elementoSelecao.getBoundingClientRect().left && el.getBoundingClientRect().top > elementoSelecao.getBoundingClientRect().top && el.getBoundingClientRect().width + el.getBoundingClientRect().left < elementoSelecao.getBoundingClientRect().left + elementoSelecao.getBoundingClientRect().width && el.getBoundingClientRect().height + el.getBoundingClientRect().top < elementoSelecao.getBoundingClientRect().top + elementoSelecao.getBoundingClientRect().height);
+                        if (elementoEmAlvo){
+                            selecionarElemento(el);
+                        }else{
+                            if (!segurandoShift){
+                                deselecionarElemento(el);
+                            }
+                        }
+                    });
+                }
+
+                if (mouseMovimentando && segurandoShift && ferramenta != "texto_editar"){
+                    Array.prototype.forEach.call(document.querySelector('.tabela').getElementsByTagName("td"), function(el) {
+                        elLeft = el.getBoundingClientRect().left;
+                        elTop = el.getBoundingClientRect().top;
+                        elWidth = el.getBoundingClientRect().width + el.getBoundingClientRect().left;
+                        elHeight = el.getBoundingClientRect().height + el.getBoundingClientRect().top;
+                        areaLeft = elementoSelecao.getBoundingClientRect().left;
+                        areaTop = elementoSelecao.getBoundingClientRect().top;
+                        areaWidth = elementoSelecao.getBoundingClientRect().width + elementoSelecao.getBoundingClientRect().left;
+                        areaHeight = elementoSelecao.getBoundingClientRect().height + elementoSelecao.getBoundingClientRect().top;
+                        
+                        elementoEmAlvo = ((elLeft < areaLeft && elTop < areaTop && elWidth > areaLeft && elHeight > areaTop)
+                                       || (elLeft < areaWidth && elTop < areaHeight && elWidth > areaWidth && elHeight > areaHeight)
+                                       || (elLeft < areaLeft && elTop < areaHeight && elWidth > areaLeft && elHeight > areaHeight)
+                                       || (elLeft < areaWidth && elTop < areaHeight && elWidth > areaLeft && elHeight > areaTop));
+                        if (elementoEmAlvo){
+                            selecionarCelulaTabela(el);
+                            if(mousex > elLeft && mousey > elTop && mousex < elWidth && mousey < elHeight){
+                                var pos = el.parentNode.rowIndex + "," + el.cellIndex + " ";
+                                var ordem = el.closest(".tabela").getAttribute("ordem");
+                                if (ordem != null && !ordem.endsWith("pos")){
+                                    if (ordem.includes(pos)){
+                                        ordem = ordem.replace(pos, "");
+                                        ordem = ordem + pos;
+                                    }
+                                    el.closest(".tabela").setAttribute("ordem", ordem);
+                                }
+                            }
+                        }else{
+                            descelecionarCelulaTabela(el);
+                        }
+                    });
+                }
+
+                if (segurandoBotaoEsquerdoMouse != -1){
+                    if (ferramenta == "retangulo"){
+                        var pos = retornarAreaSelecao(clickedPos[0], clickedPos[1], evt.clientX, evt.clientY);
+                        segurandoBotaoEsquerdoMouse.style.left = pos[0] + "px";
+                        segurandoBotaoEsquerdoMouse.style.top = pos[1] + "px";
+                        segurandoBotaoEsquerdoMouse.style.width = pos[2] + "px";
+                        segurandoBotaoEsquerdoMouse.style.height = pos[3] + "px";
+                    }else if (ferramenta == "linha"){
+                        linha = segurandoBotaoEsquerdoMouse.querySelector("line");
+                        linha.setAttribute("selecionadoxy2", true)
+                        //linha.setAttribute("x2", evt.clientX);
+                        //linha.setAttribute("y2", evt.clientY);
+                    }
+
+                    if (!segurandoShift){
+                        movimentarElementosSelecionados(evt);
+                    }
+                }
+            }else if (janelaAtual == "editor"){
+                atualizarValoresElementoApartirEditorElementosMove();
+            }
+        }
+
+        eventoTecla = '';
+        document.onkeydown = function(evt) {
+            eventoTecla = evt || window.event;
+            eventoTecla = eventoTecla.key;
+
+            if (eventoTecla == "Control"){ segurandoCtrl = true;}
+            if (eventoTecla == "Shift"){ segurandoShift = true;}
+            if (eventoTecla == "Escape"){
+                fecharJanelaDetalhes(); 
+                if (ferramenta == "texto_editar"){
+                    consolidarTexto();
+                }
+            }
+
+            if (!segurandoShift && !segurandoCtrl && eventoTecla != "Insert" && eventoTecla != "Escape" && eventoTecla != "Tab"
+                && eventoTecla != "ArrowUp" && eventoTecla != "ArrowDown" && eventoTecla != "ArrowLeft" && eventoTecla != "ArrowRight"
+                && eventoTecla != "PageUp" && eventoTecla != "PageDown" && eventoTecla != "End" && eventoTecla != "Home"
+                && eventoTecla != "Delete" && eventoTecla != "Clear"){
+                    Array.prototype.forEach.call(document.getElementsByClassName("tabela"), function(tabela){
+                        tabela.querySelectorAll('td[tdselecionado="true"]').forEach(function(td){
+                            if(tabela.getAttribute("selecionado") === "true"){
+                                textoTd = td.getElementsByClassName("texto")[0];
+                                if (textoTd.getAttribute("contenteditable") !== "true"){
+                                    textoTd.innerHTML = "";
+                                    editarTexto(textoTd);
+                                }
+                            }
+                        });
+                    });
+
+            }
+
+            if (eventoTecla == "Insert"){
+                if(ferramenta == "texto_editar"){
+                    consolidarTexto();
+                }
+                if(segurandoShift){
+                    movimentarParaProximaCelulaTabela("cima");
+                }else{
+                    movimentarParaProximaCelulaTabela("baixo");
+                }
+            }else if(eventoTecla == "Tab"){
+                event.preventDefault();
+                if(ferramenta == "texto_editar"){
+                    consolidarTexto();
+                }
+                if(segurandoShift){
+                    movimentarParaProximaCelulaTabela("esquerda");
+                }else{
+                    movimentarParaProximaCelulaTabela("direita");
+                }
+            }else if(eventoTecla == "ArrowUp" && ferramenta != "texto_editar"){
+                movimentarParaProximaCelulaTabela("cima");
+            }else if(eventoTecla == "ArrowDown" && ferramenta != "texto_editar"){
+                movimentarParaProximaCelulaTabela("baixo");
+            }else if(eventoTecla == "ArrowLeft" && ferramenta != "texto_editar"){
+                movimentarParaProximaCelulaTabela("esquerda");
+            }else if(eventoTecla == "ArrowRight" && ferramenta != "texto_editar"){
+                movimentarParaProximaCelulaTabela("direita");
+            }
+
+
+            if (ferramenta != "texto_editar" && janelaAtual == "desk"){
+                if (eventoTecla == "1"){alterarFerramenta("selecao");}
+                else if (eventoTecla == "2"){
+                    alterarFerramenta("retangulo");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "3"){
+                    alterarFerramenta("linha");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "4"){
+                    alterarFerramenta("texto");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "5"){
+                    alterarFerramenta("tabela");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "6"){
+                    alterarFerramenta("evento");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "7"){
+                    alterarFerramenta("imagem");
+                    descelecionarTodosElementos();
+                }
+                else if (eventoTecla == "8"){
+                    alterarFerramenta("grafico");
+                    descelecionarTodosElementos();
+                }
+
+                if (eventoTecla == "w"){ movimentarElementos('w', evt.clientX, evt.clientY);}
+                if (eventoTecla == "a"){
+                    if (!segurandoCtrl){ movimentarElementos('a', evt.clientX, evt.clientY);}
+                    else {selecionarDescelecionarTodoElementos();}
+                }        
+                if (eventoTecla == "d"){ movimentarElementos('d', evt.clientX, evt.clientY);}
+
+                if (eventoTecla == "g"){controleGrupo();}
+                else if (eventoTecla == "k"){controleEventoUnico();}
+                else if (eventoTecla == "l"){desprenderEventoUnico();}
+                else if (eventoTecla == "y"){retrairExpandirElementosSelecionados();}
+                else if (eventoTecla == "j"){conectarLinhas();}
+                else if (eventoTecla == "i"){desconectarLinhas();}
+            }
+
+            if (ferramenta != "texto_editar"){
+                if (eventoTecla == "f"){abrirFecharJanela("janelaSelecionarFerramenta");}
+                else if (eventoTecla == "o"){abrirFecharJanela("janelaEditarAcoes");}
+                else if (eventoTecla == "e"){ abrirFecharJanela("janelaEditarElemento");}
+            }
+
+            if (segurandoCtrl){
+                if(eventoTecla.toLowerCase() == "z"){ executarBufferCrtlZ(); }
+                else if(eventoTecla.toLowerCase() == "x"){ recortarElementosSelecionados(); }
+                else if(eventoTecla.toLowerCase() == "c"){ copiarElementosSelecionados(); }
+                else if(eventoTecla.toLowerCase() == "v"){ colarElementosSelecionados(evt.clientX, evt.clientY); }
+                else if(eventoTecla.toLowerCase() == "d"){ duplicarElementosSelecionados(); }
+            }
+
+            if (eventoTecla.toLowerCase() == "s"){
+                if (segurandoCtrl){
+                    evt.preventDefault();
+                    if (configuracoes.mostrarSalvar || configuracoes.modoSalvar == '' || segurandoShift){
+                        var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
+                        var estaModoSalvar = document.querySelector("#janelaControleArquivoSalvar").classList.contains("janBodySelect");
+                        if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoSalvar)){
+                            abrirFecharJanela("janelaControleArquivo");
+                        }
+                        alterarJanelaInterna("janelaControleArquivo", "salvar");
+                    }else{
+                        if (configuracoes.modoSalvar == "arquivo"){
+                            salvarModoArquivo();
+                        }else if (configuracoes.modoSalvar == "cookie"){
+                            salvarModoCookie();
+                        }else if (configuracoes.modoSalvar == "localstorage"){
+                            salvarModoLocalStorage();
+                        }
+                    }
+                }else if(ferramenta != "texto_editar" && janelaAtual == "desk"){ movimentarElementos('s', evt.clientX, evt.clientY); }
+            }else if (eventoTecla == "m" && segurandoCtrl){
+                evt.preventDefault();
+                var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
+                var estaModoImportar = document.querySelector("#janelaControleArquivoImportar").classList.contains("janBodySelect");
+                if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoImportar)){
+                    abrirFecharJanela("janelaControleArquivo");
+                }
+                alterarJanelaInterna("janelaControleArquivo", "importar");
+            }
+        }
+
+        document.onkeyup = function(evt){
+            eventoTecla = evt || window.event;
+            eventoTecla = eventoTecla.key;
+
+            if (ferramenta == "texto_editar" && !segurandoShift && !segurandoCtrl && eventoTecla != "Insert" && eventoTecla != "Escape"){
+                Array.prototype.forEach.call(document.getElementsByClassName("tabela"), function(tabela){
+                    tabela.querySelectorAll('td[tdselecionado="true"]').forEach(function(td){
+                        if(tabela.getAttribute("selecionado") === "true"){
+                            textoTd = td.getElementsByClassName("texto")[0];
+                            if (textoTd != document.activeElement && document.activeElement.classList.contains("texto")){
+                                textoTd.innerHTML = document.activeElement.innerHTML;
+                            }  
+                        }
+                    });
+                });
+            }
+
+
+            if (eventoTecla == "Control"){ segurandoCtrl = false;}
+            else if (eventoTecla == "Shift"){ segurandoShift = false;}
+
+            if (((eventoTecla == "Backspace" && ferramenta != "texto_editar") || eventoTecla == "Delete") && janelaAtual == "desk"){
+                apagarElementosSelecionados();
+            }
+
+            atualizarValoresElementoApartirEditorElementos();
+        }
+
+        //Desabilitar o clique botao direito
+        //document.oncontextmenu = function(){
+            //return false;
+        //}
+
+        window.onresize = function(){
+            janelaEditarAcoes.style.left = (window.innerWidth-janelaEditarAcoes.getBoundingClientRect().width)/2 + "px";
+            janelaEditarAcoes.style.top = (window.innerHeight-janelaEditarAcoes.getBoundingClientRect().height)/2 + "px";
+        }
+
+        function abrirInputImagem(input) {
+            input.addEventListener('change', function abc(evt) {
+                if (input.value.length) {
+                    carregarImagem(input);
+                }
+                input.removeEventListener("change", abc)
+            });
+        }
+
+        function carregarImagem(input){
+            if (input != null){
+                var imagem = `<img src="${input.files[0].name}" style="width: ${window.getComputedStyle(input).getPropertyValue('width')}; height: ${window.getComputedStyle(input).getPropertyValue('height')}">`
+                console.log(input.files[0].name)
+                console.log('ok')
+                input.outerHTML = imagem
+            }
+        }
+
+        setInterval(function () {
+            var s = -1
+            if (segurandoBotaoEsquerdoMouse != -1){
+                s = "1el";
+            }
+            document.getElementById("opcoesDesenvolv").innerHTML = "(" + mousex + ", " + mousey + ")<br>"+
+                                                                   ferramenta + "<br>" +
+                                                                   s + "<br>" +
+                                                                   janelaAtual + "<br>"
+        }, 300);
+
+
+
+        //MENSAGENS DE RETORNO QUANDO EU DESENVOLVER ISSO
+        //Ao atribuir um evento pertencente, o evento pertencente nao pode ter o mesmo nome do evento (isso ja funciona, so dai criar o alerta)
+
+
+
+    </script>
+
+</body>
+</html>
