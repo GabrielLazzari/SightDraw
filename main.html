@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SightView</title>
 
     <style>
         *{
@@ -95,7 +95,7 @@
         .imagem .fileInput{
             width: 100%;
             height: 100%;
-            background: url("ionicons/image-outline.svg") no-repeat center center;
+            background: url("icons/image-outline.svg") no-repeat center center;
             background-size: 100% 100%;
         }
 
@@ -126,6 +126,7 @@
         .janelaBody{
             padding-top: 40px;
             display: none;
+            background-color: rgb(171, 179, 192);
         }
 
         .janelaBody.janBodySelect{
@@ -195,11 +196,6 @@
         }
 
 
-        /*=====================================*/
-        #janelaConfiguracoes{
-            display: none;
-        }
-
 
         /*=====================================*/
         #janelaAcoes{
@@ -214,7 +210,6 @@
             flex-flow: row wrap;
             text-align: center;
             justify-content: right;
-            background-color: blueviolet;
             padding: 20px;
             background-color: rgb(171, 179, 192);
             border: 4px solid rgb(98, 98, 98);
@@ -259,10 +254,14 @@
             display: none;
         }
 
+        #janelaConfiguracoesTeclado{
+            padding: 20px;
+            padding-top: 25px;
+        }
+
 
         /*=====================================*/
         #janelaControleArquivo{
-            background-color: rgb(171, 179, 192);
             border: 4px solid rgb(98, 98, 98);
             min-width: 370px;
             display: none;
@@ -280,8 +279,7 @@
 
         /*=====================================*/
         #janelaCriarEvento{
-            background-color: rgb(171, 179, 192);
-            border: 4px solid rgb(98, 98, 98);
+
             width: 320px;
             padding: 20px;
             display: none;
@@ -291,6 +289,18 @@
             padding: 5px;
         }
 
+        /*=====================================*/
+
+        #janelaConfiguracoes{
+            border: 4px solid rgb(98, 98, 98);
+            min-width: 300px;
+        }
+
+        .configTecla{
+            text-align: right;
+        }
+
+        /*=====================================*/
         /*=====================================*/
         .janelaDetalhes{
             position: absolute;
@@ -338,8 +348,8 @@
 <body>
     
     <div id="elementoSelecao"></div>
-    <div id="elementoSelecionados"></div>
-    <div style="z-index: 4; position: absolute; left: 31px;" id="opcoesDesenvolv"></div>
+    <div id="elementoSelecionados" style="display: none;"></div>
+    <div style="z-index: 4; position: absolute;" id="janelaOpcoesDev"></div>
 
 	<!--<svg width="350" height="350">
 	<polygon points="200,50 165,150 55,150 140,220 110,325 200,260 285,325 250,220 340,150 230,150"
@@ -401,6 +411,8 @@
         </tr>
     </table>
 
+
+    <div class="elemento imagem" selecionado="false" offset_x="0" offset_y="0" idd="1683978380848" style="width: 100px; height: 100px; left: 93px; top: 32px;" mousedentro="false"><input type="file" class="fileInput" onchange="carregarImagem(this)"></div>
 
 
     <div id="janelaEditarElemento" class="janela">
@@ -481,8 +493,8 @@
             </table>
         </div>
         <div id="janelaEditarElementoAlinhar" class="janelaBody">
-            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('left')" style="display: block;"><img src="ionicons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
-            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('top')" style="display: block;"><img src="ionicons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
+            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('left')" style="display: block;"><img src="icons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
+            <div class="botaoAcao" nomeAcao="textoFormat" onclick="alinharElementos('top')" style="display: block;"><img src="icons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
         </div>
         <div id="janelaEditarElementoTexto" class="janelaBody">
             <table class="tabelaElementoPropiedades">
@@ -490,6 +502,9 @@
                     <td colspan="2">
                         <label for="editarElementoCampoNome">Texto</label>
                         <input id="editarElementoCampoNome" activeValue="texto" type="text">
+                    </td>
+                    <td>
+                        <button class="botaoAcao" nomeAcao="textoBold" onclick="definirBoldTextoSelecionado()">Bold</button>
                     </td>
                 </tr>
             </table>
@@ -551,74 +566,130 @@
         <table style="text-align: center;">
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferselecao" class="trFerramenta" onclick="alterarFerramenta('selecao')" style="background-color: rgb(120, 151, 187);" title="Selecionar (1)"><img src="ionicons/mouse-outline.svg" class="svg-sm"></div>
+                    <div id="divferselecao" class="trFerramenta" onclick="alterarFerramenta('selecao')" style="background-color: rgb(120, 151, 187);" title="Selecionar (1)"><img src="icons/mouse-outline.svg" class="svg-sm"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferretangulo" onclick="alterarFerramenta('retangulo')" class="trFerramenta" title="Novo Retangulo (2)"><img src="ionicons/retangulo-outline.svg" class="svg-sm"></div>
+                    <div id="divferretangulo" onclick="alterarFerramenta('retangulo')" class="trFerramenta" title="Novo Retangulo (2)"><img src="icons/retangulo-outline.svg" class="svg-sm"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferlinha" onclick="alterarFerramenta('linha')" class="trFerramenta"><img src="ionicons/analytics-outline.svg" class="svg-sm" title="Editar Linhas (3)"></div>
+                    <div id="divferlinha" onclick="alterarFerramenta('linha')" class="trFerramenta"><img src="icons/analytics-outline.svg" class="svg-sm" title="Editar Linhas (3)"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divfertexto" class="trFerramenta" onclick="alterarFerramenta('texto')"><img src="ionicons/font-outline.svg" class="svg-sm" title="Novo Texto (4)"></div>
+                    <div id="divfertexto" class="trFerramenta" onclick="alterarFerramenta('texto')"><img src="icons/font-outline.svg" class="svg-sm" title="Novo Texto (4)"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divfertabela" class="trFerramenta" onclick="alterarFerramenta('tabela')"><img src="ionicons/tabela-outline.svg" class="svg-sm" title="Tabela (5)"></div>
+                    <div id="divfertabela" class="trFerramenta" onclick="alterarFerramenta('tabela')"><img src="icons/tabela-outline.svg" class="svg-sm" title="Tabela (5)"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferevento" class="trFerramenta" onclick="alterarFerramenta('evento')"><img src="ionicons/chevron-forward-outline.svg" class="svg-sm" title="Criar Elemento Expansao(Evento) (6)"></div>
+                    <div id="divferevento" class="trFerramenta" onclick="alterarFerramenta('evento')"><img src="icons/chevron-forward-outline.svg" class="svg-sm" title="Criar Elemento Expansao(Evento) (6)"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferimagem" class="trFerramenta" onclick="alterarFerramenta('imagem')"><img src="ionicons/image-outline.svg" class="svg-sm" title="Imagem (7)"></div>
+                    <div id="divferimagem" class="trFerramenta" onclick="alterarFerramenta('imagem')"><img src="icons/image-outline.svg" class="svg-sm" title="Imagem (7)"></div>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divfergrafico" class="trFerramenta" onclick="alterarFerramenta('grafico')"><img src="ionicons/bar-chart-outline.svg" class="svg-sm" title="Gráfico (8)"></div>
+                    <div id="divfergrafico" class="trFerramenta" onclick="alterarFerramenta('grafico')"><img src="icons/bar-chart-outline.svg" class="svg-sm" title="Gráfico (8)"></div>
                 </td>
             </tr>
         </table>
         <table style="text-align: center; position: relative; top: calc(100% - 265px);">
             <tr>
                 <td style="padding: 1px;">
-                    <div id="divferconfiguracoes" class="trFerramenta" onclick="abrirFecharJanela('janelaConfiguracoes')"><img src="ionicons/settings-outline.svg" class="svg-sm" title="Configuracoes (c)"></div>
+                    <div id="divferconfiguracoes" class="trFerramenta" onclick="abrirFecharJanela('janelaConfiguracoes')"><img src="icons/settings-outline.svg" class="svg-sm" title="Configuracoes (c)"></div>
                 </td>
             </tr>
         </table>
     </div>
     
     <div id="janelaConfiguracoes" class="janela">
-        Opcao mostrar janel de salvar
-        Opcao de salvar rapidamente(arquivo, cookie, local)
-        Abrir arquivo escolhido ao selecionar arquivo
+        <div id="cabecalhojanelaConfiguracoes" class="janelaHead">
+            <div id="cabecalhojanelaConfiguracoesGerais" class="janHeadSelect" onclick="alterarJanelaInterna('janelaConfiguracoes', 'gerais')">Geral</div>
+            <hr>
+            <div id="cabecalhojanelaConfiguracoesEstilo" onclick="alterarJanelaInterna('janelaConfiguracoes', 'estilo')">Estilo</div>
+            <hr>
+            <div id="cabecalhojanelaConfiguracoesTeclado" onclick="alterarJanelaInterna('janelaConfiguracoes', 'teclado')">Teclado</div>
+            <hr>
+            <button class="botaoFecharJanela" onclick="fecharJanela('janelaConfiguracoes')">X</button>
+        </div>
+        <div id="janelaConfiguracoesGerais" class="janelaBody janBodySelect">
+
+            <input type="checkbox" id="abrirImagemTamOriginal" nameCheck="abrirImagemTamOriginal" onclick="marcarDesmarcarConjuntoCheckBox(this)">
+            <label for="abrirImagemTamOriginal">Importar imagem com tamanho real</label>
+            <br>
+            <input type="checkbox" id="mostrarSalvar" nameCheck="mostrarSalvar" onclick="marcarDesmarcarConjuntoCheckBox(this, inverterConfig=true)">
+            <label for="mostrarSalvar">Não mostrar Janela Salvar novamente</label>
+            <br>
+            <input type="checkbox" id="mostrarFerramentasDev" nameCheck="mostrarFerramentasDev" onclick="ativarDesativarValoresOpDev(this)">
+            <label for="mostrarFerramentasDev">Mostrar ferramentas Desenvolvedor</label>
+
+        </div>
+        <div id="janelaConfiguracoesEstilo" class="janelaBody">
+
+        </div>
+        <div id="janelaConfiguracoesTeclado" class="janelaBody">
+            <table>
+                <tr><th>Descricao</th><th>Teclas</th></tr>
+                <tr><td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="2"><hr></td></tr>
+                <tr><td>Abrir/Fechar Configurações</td><td class="configTecla">C</td></tr>
+                <tr><td>Abrir/Fechar Ferramentas</td><td class="configTecla">F</td></tr>
+                <tr><td>Abrir/Fechar Editor Elementos</td><td class="configTecla">E</td></tr>
+                <tr><td>Abrir/Fechar Editor Açoes</td><td class="configTecla">O</td></tr>
+                <tr><td>Abrir/Fechar Exportar Arquivo</td><td class="configTecla">N</td></tr>
+                <tr><td>Abrir/Fechar Importar Arquivo</td><td class="configTecla">M</td></tr>
+                <tr><td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="2"><hr></td></tr>
+                <tr><td>Salvar</td><td class="configTecla">Ctrl+S</td></tr>
+                <tr><td>Selecionar/Descelecionar todos elementos</td><td class="configTecla">Ctrl+A</td></tr>
+                <tr><td>Apagar elementos selecionados</td><td class="configTecla">Delete/Backspace</td></tr>
+                <tr><td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="2"><hr></td></tr>
+                <tr><td>Agrupar/Desagrupar elementos selecionados</td><td class="configTecla">G</td></tr>
+                <tr><td>Criar evento elementos selecionados</td><td class="configTecla">K</td></tr>
+                <tr><td>Separar evento elemento selecionado</td><td class="configTecla">L</td></tr>
+                <tr><td>Expandir/Retrair evento elemento selecionado</td><td class="configTecla">Y</td></tr>
+                <tr><td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="2"><hr></td></tr>
+                <tr><td>Mover elementos selecionados para baixo</td><td class="configTecla">W/ArrowUP/ScroolUp</td></tr>
+                <tr><td>Mover elementos selecionados para cima</td><td class="configTecla">A/ArrowDOWN/ScroolDown</td></tr>
+                <tr><td>Mover elementos selecionados para direita</td><td class="configTecla">S/ArrowLEFT/Shift+ScroolUp</td></tr>
+                <tr><td>Mover elementos selecionados para esquerda</td><td class="configTecla">D/ArrowRIGHT/Shift+ScroolDown</td></tr>
+                <tr><td style="padding: 0px; padding-top: 4px; padding-bottom: 4px;" colspan="2"><hr></td></tr>
+                <tr><td>Selecionar ferramenta Seleção</td><td class="configTecla">1</td></tr>
+                <tr><td>Selecionar ferramenta Retângulo</td><td class="configTecla">2</td></tr>
+                <tr><td>Selecionar ferramenta Linha</td><td class="configTecla">3</td></tr>
+                <tr><td>Selecionar ferramenta Texto</td><td class="configTecla">4</td></tr>
+                <tr><td>Selecionar ferramenta Tabela</td><td class="configTecla">5</td></tr>
+                <tr><td>Selecionar ferramenta Expansao</td><td class="configTecla">6</td></tr>
+                <tr><td>Selecionar ferramenta Imagem</td><td class="configTecla">7</td></tr>
+                <tr><td>Selecionar ferramenta Gráfico</td><td class="configTecla">8</td></tr>
+            </table>
+        </div>
     </div>
 
     <div id="janelaAcoes" class="janela">
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAcima')" style="display: none;"><img src="ionicons/tabela-adiconar-acima-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addEsquerda')" style="display: none;"><img src="ionicons/tabela-adiconar-esquerda-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAbaixo')" style="display: none;"><img src="ionicons/tabela-adiconar-abaixo-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addDireita')" style="display: none;"><img src="ionicons/tabela-adiconar-direita-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remLinha')" style="display: none;"><img src="ionicons/tabela-remover-linha-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remColuna')" style="display: none;"><img src="ionicons/tabela-remover-coluna-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('left')" style="display: block;"><img src="ionicons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('center')" style="display: block;"><img src="ionicons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('right')" style="display: block;"><img src="ionicons/alinhar-texto-direita-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('justify')" style="display: block;"><img src="ionicons/alinhar-texto-justificado-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="apagarElementos" onclick="apagarElementosSelecionados()" style="display: none;"><img src="ionicons/trash-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="ionicons/expando-elemens-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="ionicons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAcima')" style="display: none;"><img src="icons/tabela-adiconar-acima-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addEsquerda')" style="display: none;"><img src="icons/tabela-adiconar-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAbaixo')" style="display: none;"><img src="icons/tabela-adiconar-abaixo-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addDireita')" style="display: none;"><img src="icons/tabela-adiconar-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remLinha')" style="display: none;"><img src="icons/tabela-remover-linha-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remColuna')" style="display: none;"><img src="icons/tabela-remover-coluna-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('left')" style="display: block;"><img src="icons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('center')" style="display: block;"><img src="icons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('right')" style="display: block;"><img src="icons/alinhar-texto-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('justify')" style="display: block;"><img src="icons/alinhar-texto-justificado-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="apagarElementos" onclick="apagarElementosSelecionados()" style="display: none;"><img src="icons/trash-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="icons/expando-elemens-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div>
     </div>
 
     <div id="janelaEditarAcoes" class="janela">
@@ -634,17 +705,17 @@
             </tr>
             <tr>
                 <td><input type="checkbox" onclick="ocultarDesocultarAcoes('ima', this)" checked></td>
-                <td><div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="ionicons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div></td>
+                <td><div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div></td>
                 <td>Ima entre elementos</td>
             </tr>
             <tr>
                 <td><input type="checkbox" onclick="ocultarDesocultarAcoes('proporcaoExpancao', this)" checked></td>
-                <td><div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="ionicons/expando-elemens-outline.svg" class="svg-sm" alt=""></div></td>
+                <td><div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="icons/expando-elemens-outline.svg" class="svg-sm" alt=""></div></td>
                 <td>Aumentar proporcao de elementos internos ao expandir</td>
             </tr>
             <tr>
                 <td><input type="checkbox" onclick="ocultarDesocultarAcoes('apagarElementos', this)" checked></td>
-                <td><div class="botaoAcao" nomeAcao="apagarElementos"><img src="ionicons/trash-outline.svg" class="svg-sm" alt=""></div></td>
+                <td><div class="botaoAcao" nomeAcao="apagarElementos"><img src="icons/trash-outline.svg" class="svg-sm" alt=""></div></td>
                 <td>Apagar elementos selecionados</td>
             </tr>
         </table>
@@ -665,7 +736,7 @@
             <button class="botaoFecharJanela" onclick="fecharJanela('janelaControleArquivo')">X</button>
         </div>
         <div id="janelaControleArquivoSalvar" class="bodyjanelaControleArquivo janelaBody janBodySelect">
-            <input type="checkbox" id="mostrarSalvar" class="mostrarSalvar" onclick="salvarMostrarOuNaoNovamente(this)">
+            <input type="checkbox" id="mostrarSalvar" nameCheck="mostrarSalvar" onclick="marcarDesmarcarConjuntoCheckBox(this, inverterConfig=true)">
             <label for="mostrarSalvar">Não mostrar isso novamente</label>
             <hr style="margin-top: 10px; margin-bottom: 10px;">
             <br>
@@ -719,28 +790,77 @@
         var elementosCopiados = [];
         var bufferCtrlZ = [];
         var acoes = {ima: false, proporcaoExpancao: false};
-        var configuracoes = {mostrarSalvar: true, modoSalvar: ''};
+        var configuracoes = {mostrarSalvar: true, modoSalvar: '', abrirImagemTamOriginal:true, mostrarFerramentasDev:true};
+        var statusJanelas = {};
         var elementoSelecao = document.getElementById("elementoSelecao");
         var elementoSelecionados = document.getElementById("elementoSelecionados");
 
         var janelaEditarAcoes = document.getElementById("janelaEditarAcoes");
         var janelaEditarElemento = document.getElementById("janelaEditarElemento");
+        
+        function finalizacao(tipo = "configs", el=null){
+            if (tipo == "configs"){
+                localStorage.setItem("configs", JSON.stringify(configuracoes));
+            }else if(tipo == "acoes"){
+                localStorage.setItem("acoes", JSON.stringify(acoes));
+            }else if(tipo.includes("sjan")){
+                if (el.getElementsByClassName('janBodySelect').length > 0){
+                    statusJanelas[el.getAttribute("id")] = [window.getComputedStyle(el).getPropertyValue('display'), el.getElementsByClassName('janBodySelect')[0].id.match(/[A-Z][a-z]+/g).slice(-1)];
+                }else{
+                    statusJanelas[el.getAttribute("id")] = [window.getComputedStyle(el).getPropertyValue('display')];
+                }
+                localStorage.setItem("statusJanelas", JSON.stringify(statusJanelas));
+            }
+        }
 
+        function inicializacao(){
+            clocal = localStorage.getItem("configs");
+            if (clocal != null){
+                configuracoes = JSON.parse(clocal);
+                marcarDesmarcarConjuntoCheckBox("mostrarSalvar", check=configuracoes.mostrarSalvar, inverterConfig=true);
+                marcarDesmarcarConjuntoCheckBox("abrirImagemTamOriginal", check=configuracoes.abrirImagemTamOriginal);
+                marcarDesmarcarConjuntoCheckBox("mostrarFerramentasDev", check=configuracoes.mostrarFerramentasDev);
+            }
 
+            clocal = localStorage.getItem("acoes");
+            if (clocal != null){
+                acoes = JSON.parse(clocal);
+                for (var chave in acoes){
+                    selecionarAcao(chave, acoes[chave]);
+                }
+            }
+
+            clocal = localStorage.getItem("statusJanelas");
+            if (clocal != null){
+                statusJanelas = JSON.parse(clocal);
+                for (var chave in statusJanelas){
+                    document.getElementById(chave).style.display = statusJanelas[chave][0];
+                    if (statusJanelas[chave].length > 1){
+                        alterarJanelaInterna(chave.toString(), statusJanelas[chave][1].toString())
+                    }
+                }
+            }
+        }
+        inicializacao();
         redminJanelaAcoes();
+        ativarDesativarValoresOpDev(document.getElementById("mostrarFerramentasDev"));
 
         function abrirJanela(id, el=null){
             if(el == null){
                 el = document.getElementById(id);
             }
-            
+
             el.style.display = "block";
             if (id == "janelaEditarElemento"){
                 redminJanelaAcoes();
             } else if (id == "janelaEditarAcoes"){
                 el.style.left = (window.innerWidth-el.getBoundingClientRect().width)/2 + "px";
                 el.style.top = (window.innerHeight-el.getBoundingClientRect().height)/2 + "px";
+            }else if(id == "janelaSelecionarFerramenta" || id == "janelaOpcoesDev"){
+                redminJanelaOpDev();
             }
+
+            finalizacao("sjan", el);
         }
 
         function fecharJanela(id, el=null){
@@ -751,7 +871,11 @@
             el.style.display = "none";
             if (id == "janelaEditarElemento"){
                 redminJanelaAcoes();
+            }else if(id == "janelaSelecionarFerramenta" || id == "janelaOpcoesDev"){
+                redminJanelaOpDev();
             }
+
+            finalizacao("sjan", el);
         }
 
         function abrirFecharJanela(id){
@@ -764,6 +888,7 @@
         }
 
         function alterarJanelaInterna(janela, janelaInterna){
+            janelaInterna = janelaInterna.toLowerCase();
             Array.prototype.forEach.call(document.querySelector("#cabecalho" + janela).querySelectorAll("div"), function(el){
                 if (el.getAttribute("id").toLowerCase().includes(janelaInterna)){
                     el.classList.add("janHeadSelect");
@@ -779,6 +904,8 @@
                     el.classList.remove("janBodySelect");
                 }
             });
+
+            finalizacao("sjan", document.getElementById(janela));
         }
 
         function alterarReferenciasElemento(elb){
@@ -860,11 +987,25 @@
             }
         }
 
-        function marcarConjuntoCheckbox(grupo, ceck=true, tipoGrupo=".class"){
-            caixas = document.querySelectorAll(grupo);
-            Array.prototype.forEach.call(caixas, function(cx){
-                cx.checked = check;
+        function marcarDesmarcarConjuntoCheckBox(grupo, marcar=true, marcarConfig=true, inverterConfig=false){
+            if (typeof grupo == "object"){
+                marcar = grupo.checked;
+                grupo = grupo.getAttribute("nameCheck");
+            }
+            Array.prototype.forEach.call(document.querySelectorAll('[nameCheck="' + grupo + '"]'), function(cx){
+                cx.checked = marcar;
             });
+
+            if (marcarConfig){
+                if (grupo in configuracoes){
+                    if (inverterConfig){
+                        configuracoes[grupo] = !marcar;
+                    }else{
+                        configuracoes[grupo] = marcar;
+                    }
+                }
+            }
+            finalizacao();
         }
 
         function baixarArquivo(conteudo){
@@ -878,9 +1019,9 @@
             let link = document.createElement('a');
             if (baixarVisualizacao){
                 conteudo = conteudo + document.querySelector("style").outerHTML;
-                link.download = 'arquivo.html';
+                link.download = 'ArquivoSightView.html';
             }else{
-                link.download = 'arquivo.txt';
+                link.download = 'ArquivoSightView.txt';
             }
 
             Array.prototype.forEach.call(document.querySelectorAll(".elemento"), function(el){
@@ -895,27 +1036,21 @@
             document.body.removeChild(link);
 
             configuracoes.modoSalvar = "arquivo";
+            finalizacao();
         }
 
         function salvarModoCookie(){
             console.log("salvar cookiq");
             configuracoes.modoSalvar = "cookie";
+            finalizacao();
         }
 
         function salvarModoLocalStorage(){
             console.log("salvar local");
             configuracoes.modoSalvar = "localstorage";
+            finalizacao();
         }
 
-        function salvarMostrarOuNaoNovamente(check){           
-            if (check.checked === true){
-                configuracoes.mostrarSalvar = false;
-            }else{
-                configuracoes.mostrarSalvar = true;
-            }
-            marcarConjuntoCheckbox("mostrarSalvar", check=check.checked);
-        }
-        
         function exportarModoPng(){
 
         }
@@ -953,15 +1088,26 @@
             ferramenta = nomeFerramnta;
         }
 
-        function selecionarAcao(nomeAcao){
+        function selecionarAcao(nomeAcao, valor=null){
             Array.prototype.forEach.call(document.querySelectorAll('[nomeAcao="' + nomeAcao + '"]'), function(ac){
-                ac.classList.toggle("ativo");
-                if (ac.classList.contains("ativo")){
-                    acoes[nomeAcao] = true;
+                if (valor != null){
+                    if (valor){
+                        ac.classList.add("ativo");
+                    }else{
+                        ac.classList.remove("ativo");
+                    }
                 }else{
-                    acoes[nomeAcao] = false;
+                    ac.classList.toggle("ativo");
+                    if (ac.classList.contains("ativo")){
+                        acoes[nomeAcao] = true;
+                    }else{
+                        acoes[nomeAcao] = false;
+                    }
                 }
             });
+            if(valor == null){
+                finalizacao("acoes");
+            }
         }
 
         function ocultarBotaoAcao(nomeAcao){
@@ -986,6 +1132,8 @@
                     }else{
                         botao.style.display = "none";
                     }
+                    botao.setAttribute("checked", check.checked);
+                    console.log(botao)
                 });
                 Array.prototype.forEach.call(check.closest("table").querySelectorAll('tr td:nth-child(1)'), function(td){
                     inp = td.querySelector('input');
@@ -1003,10 +1151,19 @@
                         }else{
                             el.style.display = "none";
                         }
-                    })
+                        el.setAttribute("checked", check.checked);
+                    });
                 }
             }
             redminJanelaAcoes();
+        }
+
+        function obterStatusAcao(nomeAcao){
+            valor = document.querySelector('#janelaAcoes').querySelectorAll('[nomeAcao="' + nomeAcao + '"]')[0].getAttribute("checked");
+            if (valor == null){
+                valor = 'true';
+            }
+            return valor.toLowerCase() === 'true';
         }
 
         function redminJanelaAcoes(){
@@ -1018,7 +1175,7 @@
             // Reajustar tamanho
             Array.prototype.forEach.call(botoes, function(botao){
                 if (botao.style.display != "none"){
-                    tamanhoComBotoes = tamanhoComBotoes + 6 + +window.getComputedStyle(botao).getPropertyValue('width').replace("px", "");
+                    tamanhoComBotoes = tamanhoComBotoes + 10 + +window.getComputedStyle(botao).getPropertyValue('width').replace("px", "");
                 }
             });
 
@@ -1032,6 +1189,17 @@
 
             }else{
                 janelaAcoes.style.left = janelaEditarElemento.getBoundingClientRect().x - janelaAcoes.getBoundingClientRect().width + "px";
+            }
+        }
+
+        function redminJanelaOpDev(){
+            janelaSelecionarFerramenta = document.getElementById("janelaSelecionarFerramenta");
+            janelaOpcoesDev = document.getElementById("janelaOpcoesDev");
+            if (window.getComputedStyle(janelaSelecionarFerramenta).getPropertyValue('display') == "none"){
+                janelaOpcoesDev.style.left = "2px";
+
+            }else{
+                janelaOpcoesDev.style.left = window.getComputedStyle(janelaSelecionarFerramenta).getPropertyValue('width');
             }
         }
 
@@ -1385,6 +1553,20 @@
             });
         }
 
+        function definirBoldTextoSelecionado(){
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                //if (el.classList.contains("texto"))
+
+                //console.log(window.getSelection().toString())
+
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0);
+  
+                // Aplica a formatação "bold" na seleção
+                document.execCommand('bold', false, null);
+            });
+        }
+
         function retrairExpandirElementos(el, retrair, xp, yp){
             if (retrair){
                 el.style.left = +el.style.left.replace("px", "") - xp + "px";
@@ -1505,50 +1687,49 @@
         }
 
         function movimentarElementos(direcao){
-            if (ferramenta != "texto" && ferramenta != "texto_editar"){
-                cx = contexto.getElementsByClassName("elemento");
+            
+            cx = contexto.getElementsByClassName("elemento");
 
-                if (direcao == 'w'){
-                    Array.prototype.forEach.call(cx, function(el) {
-                        if (el.getAttribute("eventopert") != null){
-                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
-                                el.style.top = +el.style.top.replace("px", "") + velocidadeMovimentacao + "px";
-                            }
-                        }else{
+            if (direcao == 'w'){
+                Array.prototype.forEach.call(cx, function(el) {
+                    if (el.getAttribute("eventopert") != null){
+                        if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
                             el.style.top = +el.style.top.replace("px", "") + velocidadeMovimentacao + "px";
                         }
-                    });
-                }else if (direcao == 'a'){
-                    Array.prototype.forEach.call(cx, function(el) {
-                        if (el.getAttribute("eventopert") != null){
-                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
-                                el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";
-                            }
-                        }else{
-                            el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";        
+                    }else{
+                        el.style.top = +el.style.top.replace("px", "") + velocidadeMovimentacao + "px";
+                    }
+                });
+            }else if (direcao == 'a'){
+                Array.prototype.forEach.call(cx, function(el) {
+                    if (el.getAttribute("eventopert") != null){
+                        if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
+                            el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";
                         }
-                    });  
-                }else if (direcao == 's'){
-                    Array.prototype.forEach.call(cx, function(el) {
-                        if (el.getAttribute("eventopert") != null){
-                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
-                                el.style.top = +el.style.top.replace("px", "") - velocidadeMovimentacao + "px";
-                            }
-                        }else{
+                    }else{
+                        el.style.left = +el.style.left.replace("px", "") + velocidadeMovimentacao + "px";        
+                    }
+                });  
+            }else if (direcao == 's'){
+                Array.prototype.forEach.call(cx, function(el) {
+                    if (el.getAttribute("eventopert") != null){
+                        if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
                             el.style.top = +el.style.top.replace("px", "") - velocidadeMovimentacao + "px";
                         }
-                    });  
-                }else if (direcao == 'd'){
-                    Array.prototype.forEach.call(cx, function(el) {
-                        if (el.getAttribute("eventopert") != null){
-                            if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
-                                el.style.left = +el.style.left.replace("px", "") - velocidadeMovimentacao + "px";
-                            }
-                        }else{
+                    }else{
+                        el.style.top = +el.style.top.replace("px", "") - velocidadeMovimentacao + "px";
+                    }
+                });  
+            }else if (direcao == 'd'){
+                Array.prototype.forEach.call(cx, function(el) {
+                    if (el.getAttribute("eventopert") != null){
+                        if (document.querySelector('[evento="' + el.getAttribute("eventopert") + '"]').getAttribute("altexpand") == null){
                             el.style.left = +el.style.left.replace("px", "") - velocidadeMovimentacao + "px";
                         }
-                    });  
-                }
+                    }else{
+                        el.style.left = +el.style.left.replace("px", "") - velocidadeMovimentacao + "px";
+                    }
+                });  
             }
         }
 
@@ -1635,7 +1816,7 @@
                 newDiv.setAttribute("class", "elemento imagem");
                 newDiv.style.width = "100px";
                 newDiv.style.height = "100px";
-                newDiv.innerHTML = "<input type='file' class='fileInput' onclick='abrirInputImagem(this)'>";
+                newDiv.innerHTML = "<input type='file' class='fileInput' onchange='carregarImagem(this)'>";
             }else if (ferramenta == "grafico"){
                 newDiv.setAttribute("class", "elemento grafico");
                 newDiv.style.width = "100px";
@@ -2075,7 +2256,7 @@
                         newDiv.setAttribute("posicoes", elementosInteracao[k][4]);
                         newDiv.setAttribute("iddElPai", idd);
                         newDiv.style.zIndex = 2;
-                        //newDiv.innerHTML = '<img src="ionicons/expandir-bottom-right-outline.svg" class="svg-sm">'
+                        //newDiv.innerHTML = '<img src="icons/expandir-bottom-right-outline.svg" class="svg-sm">'
                         /*if (contexto == document){
                             document.body.appendChild(newDiv);
                         }else{
@@ -2144,28 +2325,36 @@
                         var antigoAlt = +el.style.height.replace("px", "");
                         if (segurandoCtrl){
                             deselecionarElemento(el);
-                            if (direcao == "bottomright"){
-                                if (area[2] < area[3]){
+                            if(el.classList.contains("imagem")){
+
+                            }else{
+                                if (direcao == "bottomright"){
+                                    if (area[2] < area[3]){
+                                        el.style.width = area[2] + 'px';
+                                        el.style.height = area[2] + 'px';
+                                    }else{
+                                        el.style.width = area[3] + 'px';
+                                        el.style.height = area[3] + 'px';
+                                    }
+                                }else if (direcao == "bottomleft"){
+                                    el.style.left = area[0] + 'px';
                                     el.style.width = area[2] + 'px';
-                                    el.style.height = area[2] + 'px';
-                                }else{
-                                    el.style.width = area[3] + 'px';
-                                    el.style.height = area[3] + 'px';
-                                }
-                            }else if (direcao == "bottomleft"){
-                                el.style.left = area[0] + 'px';
-                                el.style.width = area[2] + 'px';
-                                if (area[2] < area[0]){
-                                    el.style.height = area[2] + 'px';
-                                }else{
-                                    el.style.height = area[0] + 'px';
-                                }
-                            }else if (direcao == "topright"){
+                                    if (area[2] < area[0]){
+                                        el.style.height = area[2] + 'px';
+                                    }else{
+                                        el.style.height = area[0] + 'px';
+                                    }
+                                }else if (direcao == "topright"){
 
-                            }else if (direcao == "topleft"){
+                                }else if (direcao == "topleft"){
 
+                                }
                             }
                         }else{
+                            if(el.classList.contains("imagem")){
+                                el.firstChild.style.width = area[2] + 'px';
+                                el.firstChild.style.height = area[3] + 'px';
+                            }
                             el.style.left = area[0] + 'px';
                             el.style.top = area[1] + 'px';
                             el.style.width = area[2] + 'px';
@@ -2223,15 +2412,19 @@
 
         function copiarElementosSelecionados(){
             elementosCopiados = [];
+            strr = ``
             Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
-                elementosCopiados.push(el);
+                //elementosCopiados.push(el);
+                strr = strr + el.outerHTML
             });
+
+            navigator.clipboard.writeText(strr);
         }
 
         function colarElementosSelecionados(){
             var contador = 0;
 
-            elementosCopiados.forEach(function(el){
+            /*elementosCopiados.forEach(function(el){
                 el.setAttribute("selecionado", false);
                 elCopia = el.cloneNode(true);
                 elCopia.setAttribute("idd", 'n'+contador+Date.now());
@@ -2246,8 +2439,36 @@
                     contexto.appendChild(elCopia);
                 }
                 contador++;
-            });
+            });*/
+            //console.log(navigator.clipboard.readText())
+            event.preventDefault();
+            //let paste = (event.clipboardData || window.clipboardData).getData("text");
+            var item = event.clipboardData;
+            console.log(window.clipboardData)
+            //console.log(paste)
+
+
+
         }
+
+        /*document.onpaste = function(pasteEvent) {
+            // considera o primeiro item (pode ser facilmente estendido para vários itens)
+            var item = pasteEvent.clipboardData.items[0];
+        
+            console.log(item)
+
+            
+                var blob = item.getAsFile();
+        
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    //document.getElementById("container").src = event.target.result;
+                    console.log(event.target.result)
+                };
+        
+                reader.readAsDataURL(blob);
+            
+        }*/
 
         function recortarElementosSelecionados(){
             elementosCopiados = [];
@@ -2347,9 +2568,7 @@
         }
 
         function atualizarAreaElementosSelecionados(){
-            qtdElementosSelecionados = document.querySelectorAll('[selecionado="true"]').length;
-
-            if (qtdElementosSelecionados > 0){
+            if (ordemElementosSelecionados.length > 0 && obterStatusAcao("apagarElementos")){
                 desocultarBotaoAcao("apagarElementos");
             }else{
                 ocultarBotaoAcao("apagarElementos");
@@ -2419,7 +2638,7 @@
                                 }
                                 selecionarCelulaTabela(tabela.rows[ultimo[0]+1].cells[ultimo[1]]);
                             }
-                            else if (segurandoCtrl){
+                            else{
                                 celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
                                 editarTabela("addAbaixo");
                                 if (!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
@@ -2435,7 +2654,7 @@
                                 }
                                 selecionarCelulaTabela(tabela.rows[ultimo[0]-1].cells[ultimo[1]]);
                             }
-                            else if (segurandoCtrl){
+                            else{
                                 celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
                                 editarTabela("addAcima");
                                 if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
@@ -2451,7 +2670,7 @@
                                 }
                                 selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]+1]);
                             }
-                            else if (segurandoCtrl){
+                            else{
                                 celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
                                 editarTabela("addDireita");
                                 if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
@@ -2467,7 +2686,7 @@
                                 }
                                 selecionarCelulaTabela(tabela.rows[ultimo[0]].cells[ultimo[1]-1]);
                             }
-                            else if (segurandoCtrl){
+                            else{
                                 celulaTabelaClicada = tabela.rows[ultimo[0]].cells[ultimo[1]];
                                 editarTabela("addEsquerda");
                                 if(!segurandoShift || (segurandoShift && eventoTecla == "Tab") || (segurandoShift && eventoTecla == "Insert")){
@@ -2652,12 +2871,14 @@
         function apagarElementosSelecionados(){
             Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
                 limparReferenciasElementos(el.getAttribute("idd"));
+                controleOrdemElementosDescelecionar(el.getAttribute("idd"));
                 el.remove();
                 if (el.closest(".tabela")){
                     ocultarBotaoAcao("tabelaLinha");
                 }
             });
-            descelecionarTodosElementos();
+            atualizarAreaElementosSelecionados();
+            //descelecionarTodosElementos();
         }
 
         function controleGrupo(){
@@ -2740,6 +2961,7 @@
         }
 
         function editarTexto(el){
+            console.log(el)
             //descelecionarTodosElementos();
             el.setAttribute('contenteditable', true);
             el.classList.add('editando');
@@ -2754,6 +2976,10 @@
                 el.setAttribute('contenteditable', false);
                 el.classList.remove('editando');
             });
+            
+            if (event.target.closest("td") == null){
+                descelecionarTodosElementos();
+            }
             alterarFerramenta("selecao");
         }
 
@@ -3104,11 +3330,6 @@
         }
 
         document.onmousedown = function(evt){
-            if (evt.target.getAttribute('idd') == 'asd' || evt.target.getAttribute('idd') == '2355443'){
-                console.log(mxx(evt.target, evt.clientX))
-            }
-            //console.log(evt);
-            //console.log(evt.target)
             janelaAtual = "desk";
             if (evt.target.closest(".janela")){
                 janelaAtual = "editor";
@@ -3117,13 +3338,15 @@
             if (janelaAtual == "desk"){
                 clickedPos = [evt.clientX, evt.clientY];
                 if (evt.button === 0){
+                    var closestTexto = evt.target.closest(".texto");
+
                     if (evt.target.closest(".tabela")){
                         celulaTabelaClicada = evt.target.closest("td");
                         desocultarBotaoAcao("tabelaLinha");
                     }else{
                         ocultarBotaoAcao("tabelaLinha")
                     }
-                    if(evt.target.closest(".texto")){
+                    if(closestTexto){
                         desocultarBotaoAcao("textoFormat");
                     }else{
                         ocultarBotaoAcao("textoFormat")
@@ -3169,11 +3392,10 @@
                             selecionarLinha();
                         }
                     }
-                    else if (ferramenta == "texto" && evt.target.closest(".texto")){
-                        editarTexto(evt.target.closest(".texto"));
+                    else if (ferramenta == "texto" && closestTexto != null){
+                        editarTexto(closestTexto);
                     }
                     else if (ferramenta == "texto_editar"){
-                        closestTexto = evt.target.closest(".texto");
                         if (!closestTexto || (closestTexto && !closestTexto.classList.contains('editando'))){// && evt.target.getAttribute("contenteditable") !== "true"){
                             consolidarTexto();
                         }               
@@ -3228,6 +3450,10 @@
                     }
                 }
             }else if (janelaAtual == "editor"){
+                if (ferramenta == "texto_editar"){
+                    evt.preventDefault();
+                }
+
                 if (evt.target.closest('input')){
                     atualizarValoresElementoApartirEditorElementosClick(evt.target.closest('input'));
                 }
@@ -3261,7 +3487,9 @@
                             }
                         }
 
-                        evt.preventDefault();
+                        if (ferramenta != "texto_editar"){
+                            evt.preventDefault();
+                        }
                         if (elTdTarget.getAttribute("tdselecionado") === "true" && segurandoShift){
                             descelecionarCelulaTabela(elTdTarget)
                         }else{
@@ -3293,7 +3521,7 @@
                     juntarLinhas(evt.target);
                 }else{
                     var target = evt.target.closest(".texto");
-                    if (target){
+                    if (target != null){
                         if (target.getAttribute("contenteditable") !== 'true'){
                             editarTexto(target);
                         }
@@ -3541,23 +3769,54 @@
             }
 
             if (ferramenta != "texto_editar"){
+                if (eventoTecla == "c"){abrirFecharJanela("janelaConfiguracoes");}
                 if (eventoTecla == "f"){abrirFecharJanela("janelaSelecionarFerramenta");}
                 else if (eventoTecla == "o"){abrirFecharJanela("janelaEditarAcoes");}
                 else if (eventoTecla == "e"){ abrirFecharJanela("janelaEditarElemento");}
+                else if (eventoTecla == "n"){
+                    var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
+                    var estaModoImportar = document.querySelector("#janelaControleArquivoExportar").classList.contains("janBodySelect");
+                    if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoImportar)){
+                        abrirFecharJanela("janelaControleArquivo");
+                    }
+                    alterarJanelaInterna("janelaControleArquivo", "exportar");
+                }
+                else if (eventoTecla == "m"){
+                    var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
+                    var estaModoImportar = document.querySelector("#janelaControleArquivoImportar").classList.contains("janBodySelect");
+                    if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoImportar)){
+                        abrirFecharJanela("janelaControleArquivo");
+                    }
+                    alterarJanelaInterna("janelaControleArquivo", "importar");
+                }
             }
 
             if (segurandoCtrl){
-                if(eventoTecla.toLowerCase() == "z"){ executarBufferCrtlZ(); }
-                else if(eventoTecla.toLowerCase() == "x"){ recortarElementosSelecionados(); }
-                else if(eventoTecla.toLowerCase() == "c"){ copiarElementosSelecionados(); }
-                else if(eventoTecla.toLowerCase() == "v"){ colarElementosSelecionados(evt.clientX, evt.clientY); }
-                else if(eventoTecla.toLowerCase() == "d"){ duplicarElementosSelecionados(); }
+                if(eventoTecla.toLowerCase() == "z"){ 
+                    if (ferramenta != "texto_editar"){executarBufferCrtlZ()};
+                }
+                else if(eventoTecla.toLowerCase() == "x"){
+                    if (ferramenta != "texto_editar"){recortarElementosSelecionados()};
+                }
+                else if(eventoTecla.toLowerCase() == "c"){
+                    if (ferramenta != "texto_editar"){copiarElementosSelecionados();}
+                }
+                else if(eventoTecla.toLowerCase() == "v"){
+                    if (ferramenta != "texto_editar"){colarElementosSelecionados(evt.clientX, evt.clientY);}
+                }
+                else if(eventoTecla.toLowerCase() == "d"){
+                    if (ferramenta != "texto_editar"){
+                        duplicarElementosSelecionados();
+                    }else{
+                        evt.preventDefault();
+                    }
+                }
             }
 
             if (eventoTecla.toLowerCase() == "s"){
                 if (segurandoCtrl){
                     evt.preventDefault();
-                    if (configuracoes.mostrarSalvar || configuracoes.modoSalvar == '' || segurandoShift){
+                    if (!configuracoes.mostrarSalvar || configuracoes.modoSalvar == '' || segurandoShift){
                         var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
                         var estaModoSalvar = document.querySelector("#janelaControleArquivoSalvar").classList.contains("janBodySelect");
                         if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoSalvar)){
@@ -3565,6 +3824,7 @@
                         }
                         alterarJanelaInterna("janelaControleArquivo", "salvar");
                     }else{
+                        fecharJanela("janelaControleArquivo")
                         if (configuracoes.modoSalvar == "arquivo"){
                             salvarModoArquivo();
                         }else if (configuracoes.modoSalvar == "cookie"){
@@ -3574,14 +3834,6 @@
                         }
                     }
                 }else if(ferramenta != "texto_editar" && janelaAtual == "desk"){ movimentarElementos('s', evt.clientX, evt.clientY); }
-            }else if (eventoTecla == "m" && segurandoCtrl){
-                evt.preventDefault();
-                var janelaSalvarAberta = document.getElementById("janelaControleArquivo").style.display != "none";
-                var estaModoImportar = document.querySelector("#janelaControleArquivoImportar").classList.contains("janBodySelect");
-                if (!janelaSalvarAberta || (janelaSalvarAberta && estaModoImportar)){
-                    abrirFecharJanela("janelaControleArquivo");
-                }
-                alterarJanelaInterna("janelaControleArquivo", "importar");
             }
         }
 
@@ -3623,35 +3875,58 @@
             janelaEditarAcoes.style.top = (window.innerHeight-janelaEditarAcoes.getBoundingClientRect().height)/2 + "px";
         }
 
-        function abrirInputImagem(input) {
-            input.addEventListener('change', function abc(evt) {
-                if (input.value.length) {
-                    carregarImagem(input);
-                }
-                input.removeEventListener("change", abc)
-            });
-        }
-
         function carregarImagem(input){
             if (input != null){
-                var imagem = `<img src="${input.files[0].name}" style="width: ${window.getComputedStyle(input).getPropertyValue('width')}; height: ${window.getComputedStyle(input).getPropertyValue('height')}">`
-                console.log(input.files[0].name)
-                console.log('ok')
-                input.outerHTML = imagem
+                var reader = new FileReader();
+                parent = input.closest(".imagem");
+                
+                if (parent != null && parent.nodeName == "DIV"){
+                    reader.onload = function () {
+                        var imagem = new Image();      
+                        imagem.src = reader.result;
+
+                        imagem.onload = function(){
+                            if (!configuracoes.abrirImagemTamOriginal){
+                                imagem.style.width = window.getComputedStyle(input).getPropertyValue('width');
+                                imagem.style.height = window.getComputedStyle(input).getPropertyValue('height');
+                            }else{
+                                parent.style.width = this.width + "px";
+                                parent.style.height = this.height + "px";
+                            }
+                            parent.innerHTML = "";
+                            parent.appendChild(imagem);
+                        }
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }else{
+                    alert("Arquivo inválido, ou não foi possível carregar. Tente novamente.")
+                }
             }
         }
 
-        setInterval(function () {
-            var s = -1
-            if (segurandoBotaoEsquerdoMouse != -1){
-                s = "1el";
-            }
-            document.getElementById("opcoesDesenvolv").innerHTML = "(" + mousex + ", " + mousey + ")<br>"+
-                                                                   ferramenta + "<br>" +
-                                                                   s + "<br>" +
-                                                                   janelaAtual + "<br>"
-        }, 300);
+        var valoresOpDev;
+        function ativarDesativarValoresOpDev(botao){
+            marcarDesmarcarConjuntoCheckBox(botao)
 
+            janelaOpcoesDev = document.getElementById("janelaOpcoesDev");
+            if (configuracoes.mostrarFerramentasDev){
+                janelaOpcoesDev.style.display = "block";
+                abrirJanela("janelaOpcoesDev", janelaOpcoesDev);
+                valoresOpDev = setInterval(function () {
+                    var s = -1;
+                    if (segurandoBotaoEsquerdoMouse != -1){
+                        s = "1el";
+                    }
+                    janelaOpcoesDev.innerHTML = "(" + mousex + ", " + mousey + ")<br>"+
+                                                                        ferramenta + "<br>" +
+                                                                        s + "<br>" +
+                                                                        janelaAtual + "<br>"
+                }, 300);
+            }else{
+                clearInterval(valoresOpDev);
+                fecharJanela("janelaOpcoesDev", janelaOpcoesDev);
+            }
+        }
 
 
         //MENSAGENS DE RETORNO QUANDO EU DESENVOLVER ISSO
