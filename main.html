@@ -53,7 +53,7 @@
         /*=====================================*/
         .retangulo{
             background-color: #dbe1e2;
-            z-index: 2;
+            /*z-index: 2;*/
         }
 
         .linha{
@@ -124,7 +124,8 @@
         }
 
         .janelaBody{
-            padding-top: 40px;
+            padding: 5px;
+            padding-top: 42px;
             display: none;
             background-color: rgb(171, 179, 192);
         }
@@ -163,6 +164,8 @@
 
         .tabelaElementoPropiedades td{
             padding: 5px;
+            padding-left: 0px;
+            padding-bottom: 2px;
         }
 
         .tabelaElementoPropiedades td input{
@@ -172,6 +175,11 @@
         #cabecalhojanelaEditarElemento div{
             padding-left: 10px;
             padding-right: 10px;
+        }
+
+        .conjuntoDadosGrafico{
+            background-color: rgb(139, 163, 208);
+            margin-bottom: 4px;
         }
         
 
@@ -300,6 +308,104 @@
             text-align: right;
         }
 
+
+        /*=====================================*/
+        #janelaEditarGrafico{
+            display: none;
+        }
+
+        #janelaEditarGraficoGrafico{
+            display: flex;
+        }
+
+        .graficoNomeColuna{
+            position: relative;
+            z-index: 2;
+        }
+
+        .graficoNomeLinha{
+            position: relative;
+            display: inline;
+            float: right;
+            z-index: 2;
+        }
+
+        .grafico.barras .graficoGrade{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(224, 255, 255, 0.776);
+            z-index: 1;
+            border-collapse: collapse;
+        }
+
+        .grafico.barras .graficoConteudo{
+            position: relative;
+            width: max-content;
+            border-bottom: 2px solid rgb(255, 206, 126);
+            border-left: 2px solid rgb(255, 206, 126);
+
+            display: flex;
+            flex-flow: row wrap;
+            text-align: center;
+            justify-content: space-evenly;
+            align-items: end; /*alinhamento vertical, sem nada fica no top*/
+            z-index: 2;
+        }
+
+        .grafico.pizza .graficoConteudo{
+            display: grid;
+            /*gap: 2px;  isso aqui daria um espacinho entre os retangulos, mas eh so colocar borda no conteudo dado que reolve*/ 
+            grid-template-columns: auto 0 auto;
+            place-items: center;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .grafico.barras .graficoConteudoDado{
+            position: relative;
+            width: 30px;
+            background-color: rgb(141, 225, 197);
+            margin-left: 10px;
+        }
+
+        .grafico.pizza .graficoConteudoDado{
+            background-color: rgb(141, 225, 197);
+            aspect-ratio: 1;
+            object-fit: cover;
+            transition: .35s;
+            filter: grayscale();
+            cursor: pointer;
+            border: 2px burlywood solid;
+        }
+
+        .grafico.pizza .graficoConteudoDado:hover {
+            filter: grayscale(0%);
+        }
+
+        .grafico.barras .graficoGrade td{
+            border-top: 1px solid rgba(0, 0, 0, 0.165);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.165);
+            height: 20px;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        .grafico.barras .graficoGradeUltimaLinha{
+            background-color: rgb(255, 251, 246);
+
+        }
+
+        .grafico.barras .graficoGradePrimeiraColuna{
+            background-color: rgb(255, 251, 246);
+            width: 30px;
+        }
+
+        #graficoMiniatura{
+            width: 300px;
+            height: 300px;
+        }
+
         /*=====================================*/
         /*=====================================*/
         .janelaDetalhes{
@@ -341,6 +447,7 @@
         /*=====================================*/
         .svg{ width: 34px; height: 34px; }
         .svg-sm{ width: 24px; height: 24px; }
+        .svg-smm{ width: 20px; height: 20px; }
 
     </style>
 
@@ -411,6 +518,26 @@
         </tr>
     </table>
 
+    <div class="elemento grafico" tipo="barras" idd="ggg" style="top: 400px; left: 70px;">
+        <div class="graficoNomeColuna">aaaaa</div>
+        <table class="graficoGrade">
+            <tr class="graficoGradeUltimaLinha">
+                <td class="graficoGradePrimeiraColuna"></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <div class="graficoConteudo">
+            <div class="graficoConteudoDado" value="83"></div>
+            <div class="graficoConteudoDado" value="90"></div>
+            <div class="graficoConteudoDado" value="42"></div>
+            <div class="graficoConteudoDado" value="32"></div>
+            <div class="graficoConteudoDado" value="64"></div>
+            <div class="graficoConteudoDado" value="-10"></div>
+        </div>
+        <div class="graficoNomeLinha">bbbbb</div>
+    </div>
+
 
     <div class="elemento imagem" selecionado="false" offset_x="0" offset_y="0" idd="1683978380848" style="width: 100px; height: 100px; left: 93px; top: 32px;" mousedentro="false"><input type="file" class="fileInput" onchange="carregarImagem(this)"></div>
 
@@ -421,11 +548,13 @@
             <hr>
             <div id="cabecalhoJanelaControleArquivoAlinhar" onclick="alterarJanelaInterna('janelaEditarElemento', 'alinhar')">Alinhamento</div>
             <hr>
-            <div id="cabecalhojanelaEditarElementoTexto" onclick="alterarJanelaInterna('janelaEditarElemento', 'texto')">Texto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <div id="cabecalhojanelaEditarElementoTexto" onclick="alterarJanelaInterna('janelaEditarElemento', 'texto')">Texto</div>
             <hr>
             <div id="cabecalhoJanelaControleArquivoTabela" onclick="alterarJanelaInterna('janelaEditarElemento', 'tabela')">Tabela</div>
             <hr>
-            <div id="cabecalhoJanelaEditarElementoReferencias" onclick="alterarJanelaInterna('janelaEditarElemento', 'referencias')">Referencias</div>
+            <div id="cabecalhoJanelaControleElementoImagem" onclick="alterarJanelaInterna('janelaEditarElemento', 'imagem')">Imagem</div>
+            <hr>
+            <div id="cabecalhoJanelaEditarElementoReferencias" onclick="alterarJanelaInterna('janelaEditarElemento', 'referencias')">Refs</div>
             <hr>
             <button class="botaoFecharJanela" onclick="fecharJanela('janelaEditarElemento')">X</button>
         </div>
@@ -560,6 +689,38 @@
                 </tr>
             </table>
         </div>
+        <div id="janelaEditarElementoImagem" class="janelaBody">
+            <table class="tabelaElementoPropiedades">
+                <tr>
+                    <td>
+                        <button onclick="reverterImagemTamanhoOriginal()">Reverter tamanho</button>
+                    </td>
+                    <td>
+                        <button onclick="reverterImagemTamanhoOriginal('x')">Reverter tamanho x</button>
+                    </td>
+                    <td>
+                        <button onclick="reverterImagemTamanhoOriginal('y')">Reverter tamanho y</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div id="janelaAcoes" class="janela">
+        <div class="botaoAcao" nomeAcao="editGrafico" onclick="editarGrafico()" style="display: none;"><img src="icons/bar-chart-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAcima')" style="display: none;"><img src="icons/tabela-adiconar-acima-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addEsquerda')" style="display: none;"><img src="icons/tabela-adiconar-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAbaixo')" style="display: none;"><img src="icons/tabela-adiconar-abaixo-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addDireita')" style="display: none;"><img src="icons/tabela-adiconar-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remLinha')" style="display: none;"><img src="icons/tabela-remover-linha-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remColuna')" style="display: none;"><img src="icons/tabela-remover-coluna-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('left')" style="display: block;"><img src="icons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('center')" style="display: block;"><img src="icons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('right')" style="display: block;"><img src="icons/alinhar-texto-direita-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('justify')" style="display: block;"><img src="icons/alinhar-texto-justificado-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="apagarElementos" onclick="apagarElementosSelecionados()" style="display: none;"><img src="icons/trash-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="icons/expando-elemens-outline.svg" class="svg-sm" alt=""></div>
+        <div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div>
     </div>
 
     <div id="janelaSelecionarFerramenta" class="janela">
@@ -676,22 +837,6 @@
         </div>
     </div>
 
-    <div id="janelaAcoes" class="janela">
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAcima')" style="display: none;"><img src="icons/tabela-adiconar-acima-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addEsquerda')" style="display: none;"><img src="icons/tabela-adiconar-esquerda-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addAbaixo')" style="display: none;"><img src="icons/tabela-adiconar-abaixo-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('addDireita')" style="display: none;"><img src="icons/tabela-adiconar-direita-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remLinha')" style="display: none;"><img src="icons/tabela-remover-linha-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="tabelaLinha" onclick="editarTabela('remColuna')" style="display: none;"><img src="icons/tabela-remover-coluna-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('left')" style="display: block;"><img src="icons/alinhar-texto-esquerda-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('center')" style="display: block;"><img src="icons/alinhar-texto-centro-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('right')" style="display: block;"><img src="icons/alinhar-texto-direita-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="textoFormat" onclick="formatarTexto('justify')" style="display: block;"><img src="icons/alinhar-texto-justificado-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="apagarElementos" onclick="apagarElementosSelecionados()" style="display: none;"><img src="icons/trash-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="proporcaoExpancao" onclick="selecionarAcao('proporcaoExpancao')"><img src="icons/expando-elemens-outline.svg" class="svg-sm" alt=""></div>
-        <div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div>
-    </div>
-
     <div id="janelaEditarAcoes" class="janela">
         <table>
             <tr>
@@ -705,7 +850,7 @@
             </tr>
             <tr>
                 <td><input type="checkbox" onclick="ocultarDesocultarAcoes('ima', this)" checked></td>
-                <td><div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm" alt=""></div></td>
+                <td><div class="botaoAcao" nomeAcao="ima" onclick="selecionarAcao('ima')"><img src="icons/chevron-collapse-outline-juntar.svg" class="svg-sm"></div></td>
                 <td>Ima entre elementos</td>
             </tr>
             <tr>
@@ -723,6 +868,66 @@
 
     <div id="janelaEditarReferencias" class="janela">
         Nada aqui por enquanto
+    </div>
+
+    <div id="janelaEditarGrafico" class="janela">
+        <div id="cabecalhojanelaEditarGrafico" class="janelaHead">
+            <div id="cabecalhoJanelaEditarGraficoGrafico" class="janHeadSelect" onclick="alterarJanelaInterna('janelaEditarGrafico', 'grafico')">Grafico</div>
+            <hr>
+            <button class="botaoFecharJanela" onclick="fecharJanela('janelaEditarGrafico')">Cancelar</button>
+            <hr>
+            <button class="botaoFecharJanela" onclick="salvarEdicaoGrafico('janelaEditarGrafico')">Salvar</button>
+        </div>
+        <div id="janelaEditarGraficoGrafico" class="bodyjanelaEditarGrafico janelaBody janBodySelect">
+            <div class="visualisarGrafico" style="width: 320px; height: 320px; background-color: #ececec; padding: 5px;">
+                <div class="grafico barras" id="graficoMiniatura" style="border-width: 0px;">
+                    <!--<div class="graficoNomeColuna">aaaaa</div>-->
+                    <table class="graficoGrade" style="width: 300px; height: 300px;">
+                        <tr class="graficoGradeUltimaLinha">
+                            <td class="graficoGradePrimeiraColuna"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div class="graficoConteudo"></div>
+                    <!--<div class="graficoNomeLinha">bbbbb</div>-->
+                </div>
+            </div>
+            <div class="editarValoresGrafico" style="width: max-content; height: 400px; background-color: #979797; margin-left: 5px; padding: 5px;">
+                <table class="tabelaElementoPropiedades">
+                    <tr>
+                        <td>
+                            <select id="tipoGrafico">
+                                <option value="barras">Barras</option>
+                                <!--<option value="pizza" disabled>Pizza</option>
+                                <option value="nuvem" disabled>Nuvem</option>
+                                <option value="radar" disabled>Radar</option>-->
+                            </select>
+                        </td>
+                        <td><img src="icons/add-rect-outline.svg" class="svg-smm"></td>
+                    </tr>
+                </table>
+                <table class="janelaAreaConjuntoDadosGrafico" class="tabelaElementoPropiedades conjuntoDadosGrafico">
+                    <tr>
+                        <td>
+                            <select id="tipoGraficoBarras">
+                                <option value="colunas">Colunas</option>
+                                <option value="linhas">Linhas</option>
+                                <option value="pontos">Pontos</option>
+                                <option value="linhasPonto">Linha Ponto</option>
+                                <option value="linhasPreenchida">Linha Preenchida</option>
+                            </select>
+                        </td>
+                        <td style="text-align: right;"> mostrar ocultar<img onclick="adicinarGraficoConteudoDado(this)" src="icons/add-rect-outline.svg" class="svg-smm"><img src="icons/mover-baixo-outline.svg" class="svg-smm"><img src="icons/mover-cima-outline.svg" class="svg-smm"><img src="icons/close-rect-outline.svg" class="svg-smm"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="nome"></td>
+                        <td><input type="number" placeholder="valor"></td>
+                        <td><img onclick="moverBaixoGraficoConteudoDado(this)" src="icons/mover-baixo-outline.svg" class="svg-smm"><img onclick="moverCimaGraficoConteudoDado(this)" src="icons/mover-cima-outline.svg" class="svg-smm"><img onclick="removerGraficoConteudoDado(this)" src="icons/close-rect-outline.svg" class="svg-smm"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="janelaControleArquivo" class="janela">
@@ -776,8 +981,7 @@
         var janelaAtual = "desk";
         var ferramenta = "selecao"; //ou retangulo, linha, texto, tabela
         var contexto = document;
-        var modalAtual = [];
-        var velocidadeMovimentacao = 50;
+        var velocidadeMovimentacao = 60;
         var segurandoBotaoEsquerdoMouse = -1;
         var segurandoCtrl = false;
         var segurandoShift = false;
@@ -792,12 +996,12 @@
         var acoes = {ima: false, proporcaoExpancao: false};
         var configuracoes = {mostrarSalvar: true, modoSalvar: '', abrirImagemTamOriginal:true, mostrarFerramentasDev:true};
         var statusJanelas = {};
+
         var elementoSelecao = document.getElementById("elementoSelecao");
         var elementoSelecionados = document.getElementById("elementoSelecionados");
-
         var janelaEditarAcoes = document.getElementById("janelaEditarAcoes");
         var janelaEditarElemento = document.getElementById("janelaEditarElemento");
-        
+
         function finalizacao(tipo = "configs", el=null){
             if (tipo == "configs"){
                 localStorage.setItem("configs", JSON.stringify(configuracoes));
@@ -858,6 +1062,8 @@
                 el.style.top = (window.innerHeight-el.getBoundingClientRect().height)/2 + "px";
             }else if(id == "janelaSelecionarFerramenta" || id == "janelaOpcoesDev"){
                 redminJanelaOpDev();
+            }else{
+                el.style.left = "30px";
             }
 
             finalizacao("sjan", el);
@@ -1006,10 +1212,6 @@
                 }
             }
             finalizacao();
-        }
-
-        function baixarArquivo(conteudo){
-
         }
 
         function salvarModoArquivo(baixarVisualizacao=false){
@@ -1285,30 +1487,36 @@
                 elctv = document.activeElement;
             }
             if (elctv.nodeName == 'INPUT'){
-                var activeValue = elctv.getAttribute("activeValue");
-                var activeType = elctv.getAttribute("activeType");
-                if (activeType == null || activeType == ''){
-                    activeType = 'px';
-                }
-
-                if (activeValue == "texto"){
-                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
-                        elTexto = el.querySelector(".texto");
-                        if (elTexto == null){
-                            elTexto = document.createElement("div");
-                            elTexto.setAttribute("class", "texto");
-                            el.appendChild(elTexto);
-                        }
-                        elTexto.innerHTML = elctv.value
-                    });
-                }else if (activeValue == "persistir"){
-                    abrirSalvarReferenciasElemento(elctv);
+                if (elctv.closest("#janelaEditarGraficoGrafico")){
+                    atualizarPorcentagemGrafico("graficoMiniatura");
                 }else{
-                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
-                        if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
-                            el.style[activeValue.toString()] = elctv.value + activeType;
+                    var activeValue = elctv.getAttribute("activeValue");
+                    var activeType = elctv.getAttribute("activeType");
+                    if (activeValue != null){
+                        if (activeType == null || activeType == ''){
+                            activeType = 'px';
                         }
-                    });
+
+                        if (activeValue == "texto"){
+                            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                                elTexto = el.querySelector(".texto");
+                                if (elTexto == null){
+                                    elTexto = document.createElement("div");
+                                    elTexto.setAttribute("class", "texto");
+                                    el.appendChild(elTexto);
+                                }
+                                elTexto.innerHTML = elctv.value
+                            });
+                        }else if (activeValue == "persistir"){
+                            abrirSalvarReferenciasElemento(elctv);
+                        }else{
+                            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                                if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
+                                    el.style[activeValue.toString()] = elctv.value + activeType;
+                                }
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -1319,16 +1527,18 @@
             }
             if ((elctv.nodeName == 'INPUT' || elctv.nodeName == 'SELECT') && elctv.getAttribute("type") != "checkbox"){
                 var activeValue = elctv.getAttribute("activeValue");
-                var activeType = elctv.getAttribute("activeType");
-                if (activeType == null){
-                    activeType = 'px';
-                }
-
-                Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
-                    if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
-                        el.style[activeValue.toString()] = elctv.value + activeType;
+                if (activeValue != null){
+                    var activeType = elctv.getAttribute("activeType");
+                    if (activeType == null){
+                        activeType = 'px';
                     }
-                });
+
+                    Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                        if (!el.closest(".linha") && !el.closest(".elementoEdicao")){
+                            el.style[activeValue.toString()] = elctv.value + activeType;
+                        }
+                    });
+                }
             }
         }
 
@@ -1496,6 +1706,237 @@
                     td.outerHTML = `<td style="background-color: rgb(70, 120, 165); text-align: center;">${count}</td>`;
                     count ++;
                 });
+            }
+        }
+
+        function editarGrafico(){
+            grafico = document.querySelector('.grafico[selecionado=true]');
+            if (grafico != null){
+                graficoConteudo = grafico.getElementsByClassName("graficoConteudo")[0];
+                graficoMiniatura = document.getElementById("graficoMiniatura");
+                abrirFecharJanela("janelaEditarGrafico");
+                graficoMiniatura.getElementsByClassName("graficoGrade")[0].outerHTML = `<table class="graficoGrade" style="width: 300px; height: 300px;">
+                                <tr class="graficoGradeUltimaLinha">
+                                    <td class="graficoGradePrimeiraColuna"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>`;
+                janelaAreaConjuntoDadosGrafico = document.getElementsByClassName("janelaAreaConjuntoDadosGrafico")[0];
+                innerhtml = janelaAreaConjuntoDadosGrafico.getElementsByTagName('tr')[0].outerHTML;
+                janelaAreaConjuntoDadosGrafico.innerHTML = innerhtml;
+                graficoMiniaturaConteudo = graficoMiniatura.getElementsByClassName("graficoConteudo")[0];
+                graficoMiniaturaConteudo.innerHTML = "";
+                if (graficoConteudo != null){
+                    graficoMiniaturaConteudo.innerHTML = graficoConteudo.innerHTML;
+                    for (var el of graficoConteudo.getElementsByClassName("graficoConteudoDado")){
+                        innerhtml = innerhtml + `<tr>
+                                <td><input type="text" placeholder="nome"></td>
+                                <td><input type="number" placeholder="valor" value="${el.getAttribute("value")}"></td>
+                                <td><img onclick="moverBaixoGraficoConteudoDado(this)" src="icons/mover-baixo-outline.svg" class="svg-smm"><img onclick="moverCimaGraficoConteudoDado(this)" src="icons/mover-cima-outline.svg" class="svg-smm"><img onclick="removerGraficoConteudoDado(this)" src="icons/close-rect-outline.svg" class="svg-smm"></td>
+                            </tr>`
+                    }
+                    janelaAreaConjuntoDadosGrafico.innerHTML = innerhtml;
+                    atualizarPorcentagemGrafico(graficoMiniatura);
+                }
+            }
+        }
+
+        function salvarEdicaoGrafico(janela){
+            graficoMiniatura = document.getElementById("graficoMiniatura");
+            grafico = document.querySelector('.grafico[selecionado="true"]');
+            if (graficoMiniatura != null && grafico != null){
+                grafico.style.width = graficoMiniatura.style.width;
+                grafico.style.height = graficoMiniatura.style.height;
+                grafico.innerHTML = graficoMiniatura.innerHTML;
+                grafico.setAttribute('class', 'elemento ' + graficoMiniatura.getAttribute('class'));
+            }
+            fecharJanela(janela);
+        }
+
+        function removerGraficoConteudoDado(td){
+            td.closest("tr").remove();
+            atualizarPorcentagemGrafico("graficoMiniatura");
+        }
+
+        function adicinarGraficoConteudoDado(td){
+            tr = td.closest("tr");
+            tr.insertAdjacentHTML("afterend", `<tr>
+                        <td><input type="text" placeholder="nome"></td>
+                        <td><input type="number" placeholder="valor"></td>
+                        <td><img onclick="moverBaixoGraficoConteudoDado(this)" src="icons/mover-baixo-outline.svg" class="svg-smm"><img onclick="moverCimaGraficoConteudoDado(this)" src="icons/mover-cima-outline.svg" class="svg-smm"><img onclick="removerGraficoConteudoDado(this)" src="icons/close-rect-outline.svg" class="svg-smm"></td>
+                    </tr>`)
+        }
+
+        function moverBaixoGraficoConteudoDado(td){
+            var tr = td.closest("tr");
+            let placeholder = tr.nextElementSibling;
+            if (placeholder != null){
+                placeholder.insertAdjacentElement('afterend', tr);
+            }
+            atualizarPorcentagemGrafico("graficoMiniatura");
+        }
+
+        function moverCimaGraficoConteudoDado(td){
+            var tr = td.closest("tr");
+            let placeholder = tr.previousElementSibling;
+            if (placeholder != null){
+                if (placeholder.rowIndex != 0){
+                    placeholder.insertAdjacentElement('beforebegin', tr);
+                }
+            }
+            atualizarPorcentagemGrafico("graficoMiniatura");
+        }
+
+        function criarGraficoApartirTabela(){
+            celulaTabelaClicadaAux = celulaTabelaClicada;
+
+
+
+            celulaTabelaClicada = celulaTabelaClicadaAux;
+        }
+
+        function atualizarPorcentagemGrafico(grafico){
+            if (typeof grafico == "string"){
+                grafico = document.getElementById(grafico);
+            }
+
+            grade = grafico.getElementsByClassName("graficoGrade")[0];
+            graficoConteudo = grafico.getElementsByClassName("graficoConteudo")[0];
+            conteudo = graficoConteudo.getElementsByClassName("graficoConteudoDado");
+
+            janelaAreaConjuntoDadosGrafico = document.getElementsByClassName("janelaAreaConjuntoDadosGrafico")[0];
+            grade.innerHTML = `                        <tr class="graficoGradeUltimaLinha">
+                            <td class="graficoGradePrimeiraColuna"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>`;
+            graficoConteudo.innerHTML = "";
+            for (var [pos, el] of Object.entries(janelaAreaConjuntoDadosGrafico.getElementsByTagName('tr'))){
+                if (pos > 0){
+                    if (el.children[1].firstChild.value != ""){
+                        graficoConteudo.insertAdjacentHTML("beforeend", `<div class="graficoConteudoDado" value="${el.children[1].firstChild.value}" name="${el.children[0].firstChild.value}"></div>`);
+                    }
+                }
+            }
+
+            var valores = [0];
+
+            for (var el of conteudo){
+                var valor = +el.getAttribute("value");
+                if (!valores.includes(valor)){ valores.push(valor); }
+            }
+
+            valores.sort(function(a, b){return a - b});            
+
+            var criarLinhasEmCadaValor = 0;
+            var maiorValor = 0;
+            var menorValor = 0;
+
+            // Depois tem que validar que o maior valor nao pode ser menor que o menor valor, mas dai eu faco com o alert
+
+            if (maiorValor == menorValor){
+                maiorValor = valores[valores.length-1];
+                menorValor = valores[0];
+            }
+
+            console.log(valores, maiorValor, menorValor)
+
+            soma = Math.abs(maiorValor) + Math.abs(menorValor);
+
+            if (grafico.classList.contains("barras")){
+
+
+                if (criarLinhasEmCadaValor <= 0){
+                    valores[valores.length-1] = maiorValor
+                    /*for (v in valores){
+                        grade.insertAdjacentHTML("afterbegin", `<tr>
+                                                                <td class="graficoGradePrimeiraColuna">${valores[v]}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>`);              
+                    }*/
+                    criarLinhasEmCadaValor = valores.length - 1
+                }//else{
+                    inicio = menorValor;
+                    zeroAdicionado = false;
+                    m = 0
+
+                    for (var v=0; v <= criarLinhasEmCadaValor; v++){
+                        if (inicio >= 0 && !zeroAdicionado && menorValor == 0 && criarLinhasEmCadaValor > 0){
+                            grade.insertAdjacentHTML("afterbegin", `<tr>
+                                                                <td class="graficoGradePrimeiraColuna">0</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>`);
+                            zeroAdicionado = true;
+                        }
+                        if (Math.trunc(inicio) != 0){
+                            grade.insertAdjacentHTML("afterbegin", `<tr>
+                                                                <td class="graficoGradePrimeiraColuna">${Math.trunc(inicio)}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>`);
+                        }
+                        inicio = inicio + soma / criarLinhasEmCadaValor;
+                        m += inicio;
+                    }
+                    console.log(m)
+                //}
+
+                grafico.style.width = "300px";
+                grafico.style.height = "300px";
+
+                var alturaGrade = grade.getBoundingClientRect().height / grade.children.length * (grade.children.length-2) - +window.getComputedStyle(grade.rows[grade.rows.length-1].cells[1]).getPropertyValue("border-bottom-width").replace("px", "");
+                
+                console.log(window.getComputedStyle(grade.rows[grade.rows.length-1].cells[1]).getPropertyValue("border-bottom-width").replace("px", ""))
+                console.log(alturaGrade, soma)
+
+                var baseZero = 0;
+                if (menorValor < 0 && maiorValor > 0){
+                    baseZero = Math.abs((menorValor * 100 / soma) * alturaGrade / 100);
+                }
+
+                for (var el of conteudo){
+                    var valor = +el.getAttribute("value");
+                    var alturaBarra = Math.abs((valor * 100 / soma) * alturaGrade / 100);
+                    if (valor >= 0 && maiorValor > 0){
+                        el.style.bottom = baseZero + "px";
+                        el.style.height = alturaBarra + "px";
+                    }else if(valor < 0 && menorValor < 0){
+                        el.style.bottom = baseZero - alturaBarra + "px";
+                        el.style.height = alturaBarra + "px";
+                    }
+                }
+
+                // Atualizar posicao grafico
+                left = +window.getComputedStyle(grade.rows[grade.rows.length-1].cells[0]).getPropertyValue("width").replace("px", "");
+                topp = +window.getComputedStyle(grade).getPropertyValue("height").replace("px", "") - +window.getComputedStyle(grade.rows[grade.rows.length-1].cells[0]).getPropertyValue("height").replace("px", "") - +window.getComputedStyle(graficoConteudo).getPropertyValue("height").replace("px", "") - 2
+
+                graficoConteudo.style.left = left + 3 + "px";
+                graficoConteudo.style.top = topp + "px";
+
+            }else if (grafico.classList.contains("pizza")){
+
+                graficoConteudo.style.width = "100px";
+                graficoConteudo.style.height = "100px";
+
+                for (var el of conteudo){
+                    console.log(el)
+                    //el.style.width = "100%";
+                    //el.style.height = "100%";
+                    //el.style.clipPath = "polygon(0 0,100% 0,100% 100%,50% 100%)"
+                }
+
+                //https://css-tricks.com/css-grid-and-custom-shapes-part-1/
+
+                el[0].style.clipPath = "polygon(0 0,50% 0,100% 100%,0 100%)";
+                el[1].style.clipPath = "polygon(0 0,100% 0,50% 100%)";
+                el[2].style.clipPath = "polygon(50% 0,100% 0,100% 100%,0 100%)";
+                el[3].style.clipPath = "polygon(0 0,100% 0,50% 100%,0 100%)";
+                el[4].style.clipPath = "polygon(50% 0,100% 100%,0% 100%)";
+                el[5].style.clipPath = "polygon(0 0,100% 0,100% 100%,50% 100%)";
+
             }
         }
 
@@ -1733,9 +2174,38 @@
             }
         }
 
+        function trazerElementoParaFrente(){
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                let placeholder = el.nextElementSibling;
+                while (placeholder) {
+                    if (placeholder.classList.contains('elemento') && !placeholder.classList.contains("elementoEdicao") && placeholder.getAttribute("selecionado") === "false") {
+                        break;
+                    }
+                    placeholder = placeholder.nextElementSibling;
+                }
+                if (placeholder != null){
+                    placeholder.insertAdjacentElement('afterend', el);
+                }
+            });
+        }
+
+        function empurrarElementoParaTras(){
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
+                let placeholder = el.previousElementSibling;
+                while (placeholder) {
+                    if (placeholder.classList.contains('elemento') && !placeholder.classList.contains("elementoEdicao") && placeholder.getAttribute("selecionado") === "false") {
+                        break;
+                    }
+                    placeholder = placeholder.previousElementSibling;
+                }
+                if (placeholder != null){
+                    placeholder.insertAdjacentElement('beforebegin', el);
+                }
+            });
+        }
+
         function retornarAreaSelecao(clickedPos1_x=0, clickedPos1_y=0, clickedPos2_x=0, clickedPos2_y=0){
             area = [0, 0, 0, 0];
-
             if (clickedPos2_x >= clickedPos1_x){
                 area[0] = clickedPos1_x;
                 area[2] = clickedPos2_x - clickedPos1_x;
@@ -1751,7 +2221,6 @@
                 area[1] = clickedPos2_y;
                 area[3] = clickedPos1_y - area[1];
             }
-
             return area;
         }
 
@@ -2312,7 +2781,7 @@
                     var el = document.querySelector('[idd="'+segurandoBotaoEsquerdoMouse.getAttribute("iddElPai")+'"]');
 
                     var posicoes = segurandoBotaoEsquerdoMouse.getAttribute("posicoes").split(",");
-                    if (posicoes.length > 1){
+                    if (posicoes.length > 1 && mouseMovimentando){
                         var direcao = segurandoBotaoEsquerdoMouse.getAttribute("idd").split('_')[1].trim();
                         var aa = [posicoes[0], posicoes[1], mxx(el, evt.clientX), myy(el, evt.clientY)];
                         if (direcao == 'left' || direcao == "right"){
@@ -2386,18 +2855,6 @@
 
         function atualizarMouseOffset(mousex, mousey){
             Array.prototype.forEach.call(document.getElementsByClassName("elemento"), function(el) {
-                //aa = el.getBoundingClientRect().x - +el.style.left.replace("px", "");
-                //if (aa < 0)
-                //{aa = aa*-1; console.log('ee')}
-                //bb = el.getBoundingClientRect().y - +el.style.top.replace("px", "");
-                //if (bb < 0) bb = bb*-1
-                //if (aa == NaN){ aa = 0}
-                //if (bb == NaN){ bb = 0}
-
-                if (el.getAttribute('idd') == 'asd' || el.getAttribute('idd') == '2355443'){
-                    //console.log('we', +el.style.left.replace("px", "") - (mousex - mxx(el)), +el.style.left.replace("px", ""), mousex, mxx(el))
-                }
-                //As duas linha abaixo sao as que por enquanto melhor funcionam
                 el.setAttribute("offset_x", Math.floor(+el.style.left.replace("px", "") - mxx(el, mousex) )); //isso aqui: - (el.getBoundingClientRect().x - el.offsetLeft) anula quando um elemento esta rotacionado, ja que offsetLeft é o x original e getboun... é o x rotacionado -> foi alterado para +el.style.left.replace("px", "")) pois offsetLeft nao tem nos elementos svg
                 el.setAttribute("offset_y", Math.floor(+el.style.top.replace("px", "") - myy(el, mousey) ));
             });
@@ -2414,7 +2871,7 @@
             elementosCopiados = [];
             strr = ``
             Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
-                //elementosCopiados.push(el);
+                elementosCopiados.push(el);
                 strr = strr + el.outerHTML
             });
 
@@ -2424,7 +2881,7 @@
         function colarElementosSelecionados(){
             var contador = 0;
 
-            /*elementosCopiados.forEach(function(el){
+            elementosCopiados.forEach(function(el){
                 el.setAttribute("selecionado", false);
                 elCopia = el.cloneNode(true);
                 elCopia.setAttribute("idd", 'n'+contador+Date.now());
@@ -2439,7 +2896,7 @@
                     contexto.appendChild(elCopia);
                 }
                 contador++;
-            });*/
+            });
             //console.log(navigator.clipboard.readText())
             event.preventDefault();
             //let paste = (event.clipboardData || window.clipboardData).getData("text");
@@ -2732,16 +3189,6 @@
             });
         }
 
-        function selecionarLinhas(el){
-            retornarIdElementosReferenciados(el.getAttribute("refsTo")).forEach(function(r){
-                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
-            })
-
-            retornarIdElementosReferenciados(el.getAttribute("refsFrom")).forEach(function(r){
-                document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
-            })
-        }
-
         function controleOrdemElementosSelecionar(el){
             if (!ordemElementosSelecionados.includes(el.getAttribute("idd")) && !el.closest("elementoEdicao")){
                 ordemElementosSelecionados.push(el.getAttribute("idd"));
@@ -2765,20 +3212,28 @@
         }
         
         function selecionarElemento(el){
-            el.setAttribute("selecionado", true);
-            controleOrdemElementosSelecionar(el);
+            if (!el.classList.contains("elementoEdicaoRetangulo")){
+                el.setAttribute("selecionado", true);
+                controleOrdemElementosSelecionar(el);
 
-            //atualizarAreaTotalElementosSelecionadosAdicionar(el.getBoundingClientRect().left, el.getBoundingClientRect().top, el.getBoundingClientRect().width, el.getBoundingClientRect().height);
-            atualizarAreaElementosSelecionados();
+                //atualizarAreaTotalElementosSelecionadosAdicionar(el.getBoundingClientRect().left, el.getBoundingClientRect().top, el.getBoundingClientRect().width, el.getBoundingClientRect().height);
+                atualizarAreaElementosSelecionados();
 
-            //selecionarEvento(el);
-            //desclecionarEvento(el)
+                //selecionarEvento(el);
+                //desclecionarEvento(el)
 
-            //selecionarGrupo(el);
+                //selecionarGrupo(el);
 
-            selecionarLinhas(el);
+                // Linhas
+                retornarIdElementosReferenciados(el.getAttribute("refsTo")).forEach(function(r){
+                    document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
+                })
+                retornarIdElementosReferenciados(el.getAttribute("refsFrom")).forEach(function(r){
+                    document.querySelector('[idd="' + r[0] + '"]').setAttribute("selecionado" + r[1], true);
+                })
 
-            atribuirDesatribuirValoresEditorElementos(el);
+                atribuirDesatribuirValoresEditorElementos(el);
+            }
         }
 
         function deselecionarElemento(el){
@@ -2848,7 +3303,7 @@
             }else{
                 refs = el.getAttribute(tipoRef).split(',');
                 for (var c = refs.length-1; c >= 0; c--){
-                    if (refs[c].includes(idElemento)){ refs.splice(c); }
+                    if (refs[c].includes(idElemento)){ refs.splice(c, 1); }
                 }
                 refs = refs.join(','); refs = refs.trim();
                 if (refs == ""){
@@ -2870,6 +3325,11 @@
 
         function apagarElementosSelecionados(){
             Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el) {
+                if (el.classList.contains('linha')){
+                    Array.prototype.forEach.call(el.getElementsByTagName('line'), function(elf){
+                        limparReferenciasElementos(elf.getAttribute("idd"));
+                    })
+                }
                 limparReferenciasElementos(el.getAttribute("idd"));
                 controleOrdemElementosDescelecionar(el.getAttribute("idd"));
                 el.remove();
@@ -2896,17 +3356,6 @@
                     removerElementosDoGrupo = false;
                 }
             });
-
-            /*Array.prototype.forEach.call(document.querySelectorAll('[selecionado="true"]'), function(el){
-                var grupo = el.getAttribute('grupo')
-                if (grupo != null){
-                    if (!grupos.includes(grupo)){
-                        grupos.push(grupo);
-                    }
-                }else{
-                    removerElementosDoGrupo = false;
-                }
-            });*/
 
             var nomeGrupo = 'g' + Date.now();
             if (grupos.length > 0){
@@ -2991,14 +3440,34 @@
                 newDivCabecalho = document.createElement("div");
                 newDivCorpo = document.createElement("div");
                 
+                nome = el.getAttribute("name");
+                if (nome == null){
+                    nome = "";
+                }
+
                 newDivCabecalho.setAttribute("class", "cabecalhoJanelaDetalhes");
-                newDivCabecalho.innerHTML = `<p style="position:absolute;">${el.getAttribute("nome")}</p>
+                newDivCabecalho.innerHTML = `<p style="position:absolute;">${nome}</p>
                                             <button style="position:absolute; left: 180px; text-align:center; width: 20px; height: 20px;" onclick="maximizarMinimizarJanelaDetalhes()">+</button>
                                             <button style=" position: absolute; left: 200px; text-align: center; width: 20px; height: 20px;" onclick="fecharJanelaDetalhes()">X</button>`
 
                 newDivCorpo.setAttribute("class", "corpoJanelaDetalhes")
 
                 detalhes = el.getAttribute("detalhes");
+                fim = false;
+                if (nome.trim() != ""){
+                    Array.prototype.forEach.call(document.getElementsByName(nome), function(eln){
+                        if (!fim){
+                            dt = eln.getAttribute("detalhes")
+                            if (dt != null){
+                                if (dt.trim() != ""){
+                                    detalhes = dt;
+                                    fim = true;
+                                }
+                            }
+                        }
+                    })
+                }
+
                 if (detalhes != null && detalhes != ''){
                     newDivCorpo.innerHTML = detalhes;
                 }
@@ -3016,7 +3485,17 @@
                 ultimaJanelaAberta = janelasAbertas[janelasAbertas.length-1];
                 elemento = document.querySelector('[idd="' + ultimaJanelaAberta.getAttribute("idElemento") + '"]');
                 if (elemento != null){
-                    elemento.setAttribute("detalhes", ultimaJanelaAberta.querySelector(".corpoJanelaDetalhes").innerHTML.split('"').join("'"));
+                    detalhes = ultimaJanelaAberta.querySelector(".corpoJanelaDetalhes").innerHTML.split('"').join("'");
+                    nome = elemento.getAttribute("name");
+                    if (nome == null){
+                        nome = "";
+                    }
+                    if (nome.trim() != ""){
+                        Array.prototype.forEach.call(document.getElementsByName(nome), function(eln){
+                            eln.setAttribute("detalhes", detalhes);
+                        })
+                    }
+                    elemento.setAttribute("detalhes", detalhes);
                 }
                 ultimaJanelaAberta.remove()
                 contexto = document;
@@ -3339,17 +3818,25 @@
                 clickedPos = [evt.clientX, evt.clientY];
                 if (evt.button === 0){
                     var closestTexto = evt.target.closest(".texto");
+                    var closestGrafico = evt.target.closest(".grafico");
 
-                    if (evt.target.closest(".tabela")){
-                        celulaTabelaClicada = evt.target.closest("td");
-                        desocultarBotaoAcao("tabelaLinha");
-                    }else{
-                        ocultarBotaoAcao("tabelaLinha")
+                    if (closestGrafico == null){
+                        if (evt.target.closest(".tabela")){
+                            celulaTabelaClicada = evt.target.closest("td");
+                            desocultarBotaoAcao("tabelaLinha");
+                        }else{
+                            ocultarBotaoAcao("tabelaLinha")
+                        }
                     }
                     if(closestTexto){
                         desocultarBotaoAcao("textoFormat");
                     }else{
                         ocultarBotaoAcao("textoFormat")
+                    }
+                    if(closestGrafico){
+                        desocultarBotaoAcao("editGrafico")
+                    }else{
+                        ocultarBotaoAcao("editGrafico")
                     }
 
                     if (ferramenta == "selecao"){
@@ -3430,20 +3917,28 @@
                         abrirJanelaDetalhes(evt.target);
                     }
                 }else if (evt.button == 2){
+                    evt.preventDefault()
                     if (segurandoCtrl){
                         elTarget = evt.target.closest(".elemento");
-                        if (elTarget.classList.contains('retangulo')){
-                            alterarFerramenta("retangulo");
-                        }else if (elTarget.classList.contains('linha')){
-                            alterarFerramenta("linha");
-                        }else if (elTarget.classList.contains('texto')){
-                            alterarFerramenta("texto");
-                        }else if (elTarget.classList.contains('tabela')){
-                            alterarFerramenta("tabela");
-                        }else if (elTarget.classList.contains('evento')){
-                            //alterarFerramenta("evento");
-                        }else{
-                            alterarFerramenta("selecao");
+                        if (elTarget != null){
+                            console.log(elTarget)
+                            if (elTarget.classList.contains('retangulo')){
+                                alterarFerramenta("retangulo");
+                            }else if (elTarget.classList.contains('linha')){
+                                alterarFerramenta("linha");
+                            }else if (elTarget.classList.contains('texto')){
+                                alterarFerramenta("texto");
+                            }else if (elTarget.classList.contains('tabela')){
+                                alterarFerramenta("tabela");
+                            }else if (elTarget.classList.contains('evento')){
+                                alterarFerramenta("evento");
+                            }else if (elTarget.classList.contains('imagem')){
+                                alterarFerramenta("imagem");
+                            }else if (elTarget.classList.contains('grafico')){
+                                alterarFerramenta("grafico");
+                            }else{
+                                alterarFerramenta("selecao");
+                            }
                         }
                     }else{
 
@@ -3462,48 +3957,52 @@
 
         document.onmouseup = function(evt){
             if (janelaAtual == "desk"){
-                
-                if (mouseMovimentando){
-                    // se movimentar e tiver apenas um ou nenhum td selecionado, vai selecoinar o td alvo
-                    elTdTarget = evt.target.closest("td");
-                    if (elTdTarget != null){
-                        els = elTdTarget.closest(".tabela").querySelectorAll('td[tdselecionado="true"]')
-                        if(els.length <= 1){
-                            Array.prototype.forEach.call(els, function(td){
-                                descelecionarCelulaTabela(td);
-                            });
-                            selecionarCelulaTabela(elTdTarget);
-                        }
-                    }
-
-                }else if (!mouseMovimentando || segurandoShift){
-                    elTdTarget = evt.target.closest("td");
-                    if (elTdTarget != null){
-                        if (!segurandoShift){
-                            if (elTdTarget.closest(".tabela").getAttribute("selecionado") === "true"){
-                                Array.prototype.forEach.call(elTdTarget.closest(".tabela").querySelectorAll("td"), function(el) {
-                                    descelecionarCelulaTabela(el);
+                if (evt.button === 0){
+                    if (mouseMovimentando){
+                        // se movimentar e tiver apenas um ou nenhum td selecionado, vai selecoinar o td alvo
+                        elGraficoTarget = evt.target.closest(".grafico"); // O problema aqui é que graficos tambem tem a estrutura em tabela para a lihas
+                        elTdTarget = evt.target.closest("td");
+                        if (elTdTarget != null && elGraficoTarget == null){
+                            els = elTdTarget.closest(".tabela").querySelectorAll('td[tdselecionado="true"]')
+                            if(els.length <= 1){
+                                Array.prototype.forEach.call(els, function(td){
+                                    descelecionarCelulaTabela(td);
                                 });
+                                selecionarCelulaTabela(elTdTarget);
                             }
                         }
 
-                        if (ferramenta != "texto_editar"){
-                            evt.preventDefault();
+                    }else if (!mouseMovimentando || segurandoShift){
+                        elTdTarget = evt.target.closest("td");
+                        elGraficoTarget = evt.target.closest(".grafico"); // O problema aqui é que graficos tambem tem a estrutura em tabela para a lihas
+                        if (elTdTarget != null && elGraficoTarget == null){
+                            if (!segurandoShift){
+                                if (elTdTarget.closest(".tabela").getAttribute("selecionado") === "true"){
+                                    Array.prototype.forEach.call(elTdTarget.closest(".tabela").querySelectorAll("td"), function(el) {
+                                        descelecionarCelulaTabela(el);
+                                    });
+                                }
+                            }
+
+                            if (ferramenta != "texto_editar"){
+                                evt.preventDefault();
+                            }
+                            if (elTdTarget.getAttribute("tdselecionado") === "true" && segurandoShift){
+                                descelecionarCelulaTabela(elTdTarget)
+                            }else{
+                                selecionarCelulaTabela(elTdTarget);
+                            }
                         }
-                        if (elTdTarget.getAttribute("tdselecionado") === "true" && segurandoShift){
-                            descelecionarCelulaTabela(elTdTarget)
-                        }else{
-                            selecionarCelulaTabela(elTdTarget);
-                        }
+                    }
+
+                    if (ferramenta != "selecao" && ferramenta != "texto_editar" && !segurandoCtrl){
+                        alterarFerramenta("selecao");
                     }
                 }
 
                 clickedPos = [-1, -1];
                 elementoSelecao.style.width = "0px";
                 elementoSelecao.style.height = "0px";
-                if (ferramenta != "selecao" && ferramenta != "texto_editar"){
-                    alterarFerramenta("selecao");
-                }
 
                 segurandoBotaoEsquerdoMouse = -1;
 
@@ -3665,6 +4164,8 @@
             eventoTecla = evt || window.event;
             eventoTecla = eventoTecla.key;
 
+            elctv = document.activeElement;
+
             if (eventoTecla == "Control"){ segurandoCtrl = true;}
             if (eventoTecla == "Shift"){ segurandoShift = true;}
             if (eventoTecla == "Escape"){
@@ -3756,7 +4257,10 @@
                 if (eventoTecla == "w"){ movimentarElementos('w', evt.clientX, evt.clientY);}
                 if (eventoTecla == "a"){
                     if (!segurandoCtrl){ movimentarElementos('a', evt.clientX, evt.clientY);}
-                    else {selecionarDescelecionarTodoElementos();}
+                    else {
+                        evt.preventDefault();
+                        selecionarDescelecionarTodoElementos();
+                    }
                 }        
                 if (eventoTecla == "d"){ movimentarElementos('d', evt.clientX, evt.clientY);}
 
@@ -3766,10 +4270,12 @@
                 else if (eventoTecla == "y"){retrairExpandirElementosSelecionados();}
                 else if (eventoTecla == "j"){conectarLinhas();}
                 else if (eventoTecla == "i"){desconectarLinhas();}
+                else if (eventoTecla == "PageUp"){trazerElementoParaFrente();}
+                else if (eventoTecla == "PageDown"){empurrarElementoParaTras();}
             }
 
-            if (ferramenta != "texto_editar"){
-                if (eventoTecla == "c"){abrirFecharJanela("janelaConfiguracoes");}
+            if (ferramenta != "texto_editar" && elctv.tagName != "INPUT"){
+                if (eventoTecla == "c" && !segurandoCtrl){abrirFecharJanela("janelaConfiguracoes");}
                 if (eventoTecla == "f"){abrirFecharJanela("janelaSelecionarFerramenta");}
                 else if (eventoTecla == "o"){abrirFecharJanela("janelaEditarAcoes");}
                 else if (eventoTecla == "e"){ abrirFecharJanela("janelaEditarElemento");}
@@ -3794,22 +4300,29 @@
             if (segurandoCtrl){
                 if(eventoTecla.toLowerCase() == "z"){ 
                     if (ferramenta != "texto_editar"){executarBufferCrtlZ()};
-                }
-                else if(eventoTecla.toLowerCase() == "x"){
+
+                }else if(eventoTecla.toLowerCase() == "x"){
                     if (ferramenta != "texto_editar"){recortarElementosSelecionados()};
-                }
-                else if(eventoTecla.toLowerCase() == "c"){
+
+                }else if(eventoTecla.toLowerCase() == "c"){
                     if (ferramenta != "texto_editar"){copiarElementosSelecionados();}
-                }
-                else if(eventoTecla.toLowerCase() == "v"){
+
+                }else if(eventoTecla.toLowerCase() == "v"){
                     if (ferramenta != "texto_editar"){colarElementosSelecionados(evt.clientX, evt.clientY);}
-                }
-                else if(eventoTecla.toLowerCase() == "d"){
+
+                }else if(eventoTecla.toLowerCase() == "d"){
                     if (ferramenta != "texto_editar"){
                         duplicarElementosSelecionados();
                     }else{
                         evt.preventDefault();
                     }
+
+                }else if (eventoTecla.toLowerCase() == "a"){
+                    console.log(window.getSelection().toString())
+                    //if (window.getSelection().toString() != ""){
+                        //evt.preventDefault();
+                        //window.getSelection()?.removeAllRanges();
+                    //}
                 }
             }
 
@@ -3866,9 +4379,11 @@
         }
 
         //Desabilitar o clique botao direito
-        //document.oncontextmenu = function(){
-            //return false;
-        //}
+        document.oncontextmenu = function(){
+            if (!segurandoShift && janelaAtual == "desk"){
+                return false;
+            }
+        }
 
         window.onresize = function(){
             janelaEditarAcoes.style.left = (window.innerWidth-janelaEditarAcoes.getBoundingClientRect().width)/2 + "px";
@@ -3886,6 +4401,7 @@
                         imagem.src = reader.result;
 
                         imagem.onload = function(){
+                            parent.setAttribute('tamOrg', this.width + ',' + this.height);
                             if (!configuracoes.abrirImagemTamOriginal){
                                 imagem.style.width = window.getComputedStyle(input).getPropertyValue('width');
                                 imagem.style.height = window.getComputedStyle(input).getPropertyValue('height');
@@ -3902,6 +4418,32 @@
                     alert("Arquivo inválido, ou não foi possível carregar. Tente novamente.")
                 }
             }
+        }
+
+        function reverterImagemTamanhoOriginal(lado=''){
+            Array.prototype.forEach.call(document.querySelectorAll('[selecionado=true]'), function(el){
+                if (el.classList.contains('imagem')){
+                    console.log(el)
+                    tamOrg = el.getAttribute('tamOrg');
+                    elImg = el.getElementsByTagName('img')[0]
+                    if (tamOrg != null && elImg != null){
+                        console.log(tamOrg, elImg)
+                        tamOrg = tamOrg.split(',');
+                        if (lado == 'x'){
+                            el.style.width = tamOrg[0] + "px";
+                            elImg.style.width = tamOrg[0] + "px";
+                        }else if (lado == 'y'){
+                            el.style.height = tamOrg[1] + "px";
+                            elImg.style.height = tamOrg[1] + "px";
+                        }else{
+                            el.style.width = tamOrg[0] + "px";
+                            elImg.style.width = tamOrg[0] + "px";
+                            el.style.height = tamOrg[1] + "px";
+                            elImg.style.height = tamOrg[1] + "px";
+                        }
+                    }
+                }
+            });
         }
 
         var valoresOpDev;
@@ -3931,8 +4473,6 @@
 
         //MENSAGENS DE RETORNO QUANDO EU DESENVOLVER ISSO
         //Ao atribuir um evento pertencente, o evento pertencente nao pode ter o mesmo nome do evento (isso ja funciona, so dai criar o alerta)
-
-
 
     </script>
 
